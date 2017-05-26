@@ -13,23 +13,6 @@ Authentication method
 You'll need to provide the authentication method and your credentials to
 :program:`gnocchi`.
 
-No authentication
-~~~~~~~~~~~~~~~~~
-
-If you're using Gnocchi with no authentication, export the following variables
-in your environment::
-
-  export OS_AUTH_TYPE=gnocchi-noauth
-  export GNOCCHI_USER_ID=<youruserid>
-  export GNOCCHI_PROJECT_ID=<yourprojectid>
-  export GNOCCHI_ENDPOINT=http://urlofgnocchi
-
-.. note::
-
-  OS_AUTH_TYPE is used globally by all clients supporting Keystone. Provide
-  :option:`--os-auth-plugin` gnocchi-noauth to the client instead if other
-  clients are used in session.
-
 Basic authentication
 ~~~~~~~~~~~~~~~~~~~~
 
