@@ -2,6 +2,13 @@
 gnocchiclient
 =============
 
+.. image:: https://travis-ci.org/gnocchixyz/python-gnocchiclient.png?branch=master
+    :target: https://travis-ci.org/gnocchixyz/python-gnocchiclient
+    :alt: Build Status
+
+.. image:: https://badge.fury.io/py/gnocchiclient.svg
+    :target: https://badge.fury.io/py/gnocchiclient
+
 Python bindings to the Gnocchi API
 
 This is a client for Gnocchi API. There's :doc:`a Python API <api>` (the
