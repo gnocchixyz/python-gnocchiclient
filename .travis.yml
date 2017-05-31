@@ -11,6 +11,7 @@ env:
   - TARGET: pep8
   - TARGET: py27
   - TARGET: py35
+  - TARGET: docs-gnocchi.xyz
 
 before_script:
   - docker build --tag gnocchi-ci --file=tools/travis-ci-setup.dockerfile .
