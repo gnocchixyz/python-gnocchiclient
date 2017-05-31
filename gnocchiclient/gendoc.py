@@ -14,23 +14,60 @@
 
 from __future__ import absolute_import
 
+import sys
+
 from os_doc_tools import commands
+
+from gnocchiclient import shell
 
 # HACK(jd) Not sure why but Sphinx setup this multiple times, so we just avoid
 # doing several times the requests by using this global variable :(
 _RUN = False
 
 
+def get_clients():
+    return {'gnocchi': {
+        'name': 'A time series storage and resources index service (Gnocchi)',
+    }}
+
+
+def discover_subcommands(os_command, subcommands, extra_params):
+    return shell.GnocchiCommandManager.SHELL_COMMANDS.keys()
+
+
 def setup(app):
     global _RUN
     if _RUN:
         return
-    commands.document_single_project("gnocchi", "doc/source", False)
+
+    output_dir = "doc/source"
+    os_command = 'gnocchi'
+    print("Documenting '%s'" % os_command)
+
+    api_name = "Gnocchi API"
+    title = "Gnocchi command-line client"
+
+    out_filename = os_command + ".rst"
+    out_file = commands.generate_heading(os_command, api_name, title,
+                                         output_dir, out_filename,
+                                         False)
+    if not out_file:
+        sys.exit(-1)
+
+    commands.generate_command(os_command, out_file)
+    commands.generate_subcommands(
+        os_command, out_file,
+        list(sorted(shell.GnocchiCommandManager.SHELL_COMMANDS.keys())),
+        None, "", "")
+
+    print("Finished.\n")
+    out_file.close()
+
     with open("doc/source/gnocchi.rst", "r") as f:
         data = f.read().splitlines(True)
         for index, line in enumerate(data):
             if "This chapter documents" in line:
                 break
     with open("doc/source/gnocchi.rst", "w") as f:
-        f.writelines(data[index+1:])
+        f.writelines(data[index + 1:])
     _RUN = True
