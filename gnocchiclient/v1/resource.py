@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from oslo_serialization import jsonutils
+import ujson
 
 from gnocchiclient import utils
 from gnocchiclient.v1 import base
@@ -93,7 +93,7 @@ class ResourceManager(base.Manager):
         return self._post(
             self.url + resource_type,
             headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(resource)).json()
+            data=ujson.dumps(resource)).json()
 
     def update(self, resource_type, resource_id, resource):
         """Update a resource
@@ -108,7 +108,7 @@ class ResourceManager(base.Manager):
         return self._patch(
             self.url + resource_type + "/" + resource_id,
             headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(resource)).json()
+            data=ujson.dumps(resource)).json()
 
     def delete(self, resource_id):
         """Delete a resource
@@ -127,7 +127,7 @@ class ResourceManager(base.Manager):
         return self._delete(
             self.url+resource_type + "/",
             headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(query)).json()
+            data=ujson.dumps(query)).json()
 
     def search(self, resource_type="generic", query=None, details=False,
                history=False, limit=None, marker=None, sorts=None):
@@ -161,4 +161,4 @@ class ResourceManager(base.Manager):
         url = "v1/search/resource/%s?%s" % (resource_type, qs)
         return self._post(
             url, headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(query)).json()
+            data=ujson.dumps(query)).json()
