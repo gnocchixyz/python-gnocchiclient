@@ -10,10 +10,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+import distutils.util
+
 from cliff import command
 from cliff import lister
 from cliff import show
-from oslo_utils import strutils
 
 from gnocchiclient import utils
 
@@ -58,8 +60,7 @@ class CliResourceTypeCreate(show.ShowOne):
         if config:
             attrs["type"] = config.pop(0)
         if config:
-            attrs["required"] = strutils.bool_from_string(config.pop(0),
-                                                          strict=True)
+            attrs["required"] = bool(distutils.util.strtobool(config.pop(0)))
         while config:
             param, _, value = config.pop(0).partition("=")
             try:
