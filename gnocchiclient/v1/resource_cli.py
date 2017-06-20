@@ -10,11 +10,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+import distutils.util
+
 from cliff import command
 from cliff import lister
 from cliff import show
-
-from oslo_utils import strutils
 
 from gnocchiclient import exceptions
 from gnocchiclient import utils
@@ -173,7 +174,7 @@ class CliResourceCreate(show.ShowOne):
                 if attr_type == "number":
                     value = float(value)
                 elif attr_type == "bool":
-                    value = strutils.bool_from_string(value)
+                    value = bool(distutils.util.strtobool(value))
                 resource[attr] = value
         if (parsed_args.add_metric
            or parsed_args.create_metric

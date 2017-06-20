@@ -22,10 +22,12 @@ import types
 
 from cliff import show
 import futurist
-from oslo_utils import timeutils
+import iso8601
+from monotonic import monotonic as now  # noqa
 import six.moves
 
 from gnocchiclient.v1 import metric_cli
+
 
 LOG = logging.getLogger(__name__)
 
@@ -35,6 +37,7 @@ def _pickle_method(m):
         return getattr, (m.im_class, m.im_func.func_name)
     else:
         return getattr, (m.im_self, m.im_func.func_name)
+
 
 six.moves.copyreg.pickle(types.MethodType, _pickle_method)
 
@@ -60,26 +63,31 @@ def _positive_non_zero_int(argument_value):
     return value
 
 
+class StopWatch(object):
+    def __init__(self):
+        self.started_at = now()
+
+    def elapsed(self):
+        return max(0.0, self.started_at - now())
+
+
 def measure_job(fn, *args, **kwargs):
-    # NOTE(sileht): This is not part of BenchmarkPool
     # because we cannot pickle BenchmarkPool class
-    sw = timeutils.StopWatch().start()
+    sw = StopWatch()
     return fn(*args, **kwargs), sw.elapsed()
 
 
 class BenchmarkPool(futurist.ProcessPoolExecutor):
     def submit_job(self, times, fn, *args, **kwargs):
-        self.sw = timeutils.StopWatch()
-        self.sw.start()
+        self.sw = StopWatch()
         self.times = times
         return [self.submit(measure_job, fn, *args, **kwargs)
                 for i in six.moves.range(times)]
 
     def map_job(self, fn, iterable, **kwargs):
-        self.sw = timeutils.StopWatch()
         r = []
         self.times = 0
-        self.sw.start()
+        self.sw = StopWatch()
         for item in iterable:
             r.append(self.submit(measure_job, fn, item, **kwargs))
             self.times += 1
@@ -117,7 +125,8 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
             verb + ' runtime': "%.2f seconds" % runtime,
             verb + ' executed': self.statistics.executed,
             verb + ' speed': (
-                "%.2f %s/s" % (self.statistics.executed / runtime, verb)
+                "%.2f %s/s" % (self.statistics.executed / runtime
+                               if runtime != 0 else 0, verb)
             ),
             verb + ' failures': self.statistics.failures,
             verb + ' failures rate': (
@@ -237,13 +246,14 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                             help="Number of measures to send in each batch")
         parser.add_argument("--timestamp-start", "-s",
                             default=(
-                                timeutils.utcnow(True)
+                                datetime.datetime.now(tz=iso8601.iso8601.UTC)
                                 - datetime.timedelta(days=365)),
-                            type=timeutils.parse_isotime,
+                            type=iso8601.parse_date,
                             help="First timestamp to use")
         parser.add_argument("--timestamp-end", "-e",
-                            default=timeutils.utcnow(True),
-                            type=timeutils.parse_isotime,
+                            default=(
+                                datetime.datetime.now(tz=iso8601.iso8601.UTC)),
+                            type=iso8601.parse_date,
                             help="Last timestamp to use")
         parser.add_argument("--wait",
                             default=False,
@@ -293,24 +303,25 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
         stats['measures push speed'] = (
             "%.2f push/s" % (
                 parsed_args.batch * pool.statistics.executed / runtime
+                if runtime != 0 else 0
             )
         )
 
         if parsed_args.wait:
-            with timeutils.StopWatch() as sw:
-                while True:
-                    status = self.app.client.status.get()
-                    remaining = int(status['storage']['summary']['measures'])
-                    if remaining == 0:
-                        stats['extra wait to process measures'] = (
-                            "%s seconds" % sw.elapsed()
-                        )
-                        break
-                    else:
-                        LOG.info(
-                            "Remaining measures to be processed: %d"
-                            % remaining)
-                    time.sleep(1)
+            sw = StopWatch()
+            while True:
+                status = self.app.client.status.get()
+                remaining = int(status['storage']['summary']['measures'])
+                if remaining == 0:
+                    stats['extra wait to process measures'] = (
+                        "%s seconds" % sw.elapsed()
+                    )
+                    break
+                else:
+                    LOG.info(
+                        "Remaining measures to be processed: %d"
+                        % remaining)
+                time.sleep(1)
 
         return self.dict2columns(stats)
 

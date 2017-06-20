@@ -9,17 +9,17 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import sys
 
 from keystoneauth1 import adapter
-from oslo_utils import importutils
 
 from gnocchiclient import exceptions
 
 
 def Client(version, *args, **kwargs):
     module = 'gnocchiclient.v%s.client' % version
-    module = importutils.import_module(module)
-    client_class = getattr(module, 'Client')
+    __import__(module)
+    client_class = getattr(sys.modules[module], 'Client')
     return client_class(*args, **kwargs)
 
 
