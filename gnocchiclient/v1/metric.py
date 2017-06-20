@@ -14,7 +14,7 @@
 import datetime
 import uuid
 
-from oslo_serialization import jsonutils
+import ujson
 
 from gnocchiclient import utils
 from gnocchiclient.v1 import base
@@ -79,7 +79,7 @@ class MetricManager(base.Manager):
         if resource_id is None:
             metric = self._post(
                 self.metric_url, headers={'Content-Type': "application/json"},
-                data=jsonutils.dumps(metric)).json()
+                data=ujson.dumps(metric)).json()
             # FIXME(sileht): create and get have a
             # different output: LP#1497171
             if refetch_metric:
@@ -96,7 +96,7 @@ class MetricManager(base.Manager):
         metric = self._post(
             self.resource_url % resource_id,
             headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(metric))
+            data=ujson.dumps(metric))
         return self.get(metric_name, resource_id)
 
     def delete(self, metric, resource_id=None):
@@ -133,7 +133,7 @@ class MetricManager(base.Manager):
             url = self.resource_url % resource_id + metric + "/measures"
         return self._post(
             url, headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(measures))
+            data=ujson.dumps(measures))
 
     def batch_metrics_measures(self, measures):
         """Add measurements to metrics
@@ -145,7 +145,7 @@ class MetricManager(base.Manager):
         return self._post(
             self.metric_batch_url,
             headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(measures))
+            data=ujson.dumps(measures))
 
     def batch_resources_metrics_measures(self, measures, create_metrics=False):
         """Add measurements to named metrics if resources
@@ -158,7 +158,7 @@ class MetricManager(base.Manager):
         return self._post(
             self.resources_batch_url,
             headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(measures),
+            data=ujson.dumps(measures),
             params=dict(create_metrics=create_metrics))
 
     def get_measures(self, metric, start=None, stop=None, aggregation=None,
@@ -264,4 +264,4 @@ class MetricManager(base.Manager):
                     resource_type, metrics,
                     utils.dict_to_querystring(params)),
                 headers={'Content-Type': "application/json"},
-                data=jsonutils.dumps(query)).json()
+                data=ujson.dumps(query)).json()

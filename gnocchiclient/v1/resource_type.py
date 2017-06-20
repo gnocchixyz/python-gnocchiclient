@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from oslo_serialization import jsonutils
+import ujson
 
 from gnocchiclient.v1 import base
 
@@ -32,7 +32,7 @@ class ResourceTypeManager(base.Manager):
         return self._post(
             self.url,
             headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(resource_type)).json()
+            data=ujson.dumps(resource_type)).json()
 
     def get(self, name):
         """Get a resource type
@@ -62,4 +62,4 @@ class ResourceTypeManager(base.Manager):
         return self._patch(
             self.url + name,
             headers={'Content-Type': "application/json-patch+json"},
-            data=jsonutils.dumps(operations)).json()
+            data=ujson.dumps(operations)).json()
