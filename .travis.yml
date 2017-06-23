@@ -15,6 +15,9 @@ env:
 
 before_script:
   - docker build --tag gnocchi-ci --file=tools/travis-ci-setup.dockerfile .
+  # Allow docker to write in home directory
+  - chmod -R o+w ~/
+  - find ~/ -type d -exec chmod o+x {} \;
 script:
   - docker run -v ~/.cache/pip:/home/tester/.cache/pip -v $(pwd):/home/tester/src gnocchi-ci tox -e ${TARGET}
 
