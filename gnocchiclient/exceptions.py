@@ -125,6 +125,11 @@ class NamedMetricAlreadyExists(Conflict, MutipleMeaningException):
     match = re.compile("Named metric .* already exist")
 
 
+class ResourceTypeAlreadyExists(Conflict, MutipleMeaningException):
+    message = "Resource type already exists"
+    match = re.compile("Resource type .* already exists")
+
+
 class ResourceAlreadyExists(Conflict, MutipleMeaningException):
     message = "Resource already exists"
     match = re.compile("Resource .* already exists")
@@ -173,7 +178,8 @@ _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
 _error_classes_enhanced = {
     NotFound: [MetricNotFound, ResourceTypeNotFound, ResourceNotFound,
                ArchivePolicyRuleNotFound, ArchivePolicyNotFound],
-    Conflict: [NamedMetricAlreadyExists, ResourceAlreadyExists,
+    Conflict: [NamedMetricAlreadyExists, ResourceTypeAlreadyExists,
+               ResourceAlreadyExists,
                ArchivePolicyAlreadyExists,
                ArchivePolicyRuleAlreadyExists]
 }
