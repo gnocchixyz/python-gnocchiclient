@@ -12,12 +12,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from oslotest import base
+import testtools
 
 from gnocchiclient import utils
 
 
-class SearchQueryBuilderTest(base.BaseTestCase):
+class SearchQueryBuilderTest(testtools.TestCase):
     def _do_test(self, expr, expected):
         req = utils.search_query_builder(expr)
         self.assertEqual(expected, req)
