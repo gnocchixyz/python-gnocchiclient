@@ -13,13 +13,13 @@
 #    under the License.
 import json
 
-from oslotest import base
 from requests import models
+import testtools
 
 from gnocchiclient import exceptions
 
 
-class ExceptionsTest(base.BaseTestCase):
+class ExceptionsTest(testtools.TestCase):
     def test_from_response_404(self):
         r = models.Response()
         r.status_code = 404

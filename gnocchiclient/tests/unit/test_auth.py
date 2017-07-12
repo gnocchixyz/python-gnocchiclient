@@ -12,12 +12,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from oslotest import base
+import testtools
 
 from gnocchiclient import auth
 
 
-class GnocchiBasicPluginTest(base.BaseTestCase):
+class GnocchiBasicPluginTest(testtools.TestCase):
     def test_get_headers(self):
         p = auth.GnocchiBasicPlugin("foobar", "http://localhost")
         self.assertEqual({'Authorization': 'basic Zm9vYmFyOg=='},
