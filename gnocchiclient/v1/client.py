@@ -13,8 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import debtcollector
-from debtcollector import removals
 import keystoneauth1.session
 
 from gnocchiclient import client
@@ -40,28 +38,13 @@ class Client(object):
     :type session_options: dict (optional)
     """
 
-    @removals.removed_kwarg('service_type',
-                            message="Please use 'adapter_options="
-                            "dict(service_type=...)' instead")
-    def __init__(self, session=None, service_type=None,
-                 adapter_options=None, session_options=None,
-                 **kwargs):
+    def __init__(self, session=None, adapter_options=None,
+                 session_options=None):
         """Initialize a new client for the Gnocchi v1 API."""
         session_options = session_options or {}
         adapter_options = adapter_options or {}
 
         adapter_options.setdefault('service_type', "metric")
-
-        # NOTE(sileht): Backward compat stuff
-        if kwargs:
-            for key in kwargs:
-                debtcollector.deprecate(
-                    "Using the '%s' argument is deprecated" % key,
-                    message="Please use 'adapter_options=dict(%s=...)' "
-                    "instead" % key)
-            adapter_options.update(kwargs)
-        if service_type is not None:
-            adapter_options['service_type'] = service_type
 
         if session is None:
             session = keystoneauth1.session.Session(**session_options)
