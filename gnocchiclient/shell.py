@@ -88,7 +88,6 @@ class GnocchiShell(app.App):
     def __init__(self):
         super(GnocchiShell, self).__init__(
             description='Gnocchi command line client',
-            # FIXME(sileht): get version from pbr
             version=__version__,
             command_manager=GnocchiCommandManager(None),
             deferred_help=True,
