@@ -50,6 +50,22 @@ class MutipleMeaningException(object):
     """An mixin for exception that can be enhanced by reading the details"""
 
 
+class ConnectionFailure(ClientException):
+    """Connection failure"""
+
+
+class ConnectionTimeout(ClientException):
+    """Connection timeout"""
+
+
+class UnknownConnectionError(ClientException):
+    """Unknown connection error"""
+
+
+class SSLError(ClientException):
+    """SSL connection error"""
+
+
 class BadRequest(ClientException):
     """HTTP 400 - Bad request: you sent some malformed data."""
     http_status = 400
