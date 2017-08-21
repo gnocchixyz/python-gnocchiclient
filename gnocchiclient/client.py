@@ -12,6 +12,7 @@
 import sys
 
 from keystoneauth1 import adapter
+from keystoneauth1 import exceptions as k_exc
 
 from gnocchiclient import exceptions
 
@@ -29,10 +30,23 @@ class SessionClient(adapter.Adapter):
         # NOTE(sileht): The standard call raises errors from
         # keystoneauth, where we need to raise the gnocchiclient errors.
         raise_exc = kwargs.pop('raise_exc', True)
-        resp = super(SessionClient, self).request(url,
-                                                  method,
-                                                  raise_exc=False,
-                                                  **kwargs)
+
+        try:
+            resp = super(SessionClient, self).request(url,
+                                                      method,
+                                                      raise_exc=False,
+                                                      **kwargs)
+        except k_exc.connection.ConnectFailure as e:
+            raise exceptions.ConnectionFailure(
+                message=str(e), url=url, method=method)
+        except k_exc.connection.UnknownConnectionError as e:
+            raise exceptions.UnknownConnectionError(
+                message=str(e), url=url, method=method)
+        except k_exc.connection.ConnectionTimeout as e:
+            raise exceptions.ConnectionTimeout(
+                message=str(e), url=url, method=method)
+        except k_exc.SSLError as e:
+            raise exceptions.SSLError(message=str(e), url=url, method=method)
 
         if raise_exc and resp.status_code >= 400:
             raise exceptions.from_response(resp, method)
