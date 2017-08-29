@@ -68,7 +68,7 @@ class StopWatch(object):
         self.started_at = now()
 
     def elapsed(self):
-        return max(0.0, self.started_at - now())
+        return max(0.0, now() - self.started_at)
 
 
 def measure_job(fn, *args, **kwargs):
