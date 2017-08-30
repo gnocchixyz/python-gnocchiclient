@@ -123,9 +123,11 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
         return results, runtime, {
             'client workers': self._max_workers,
             verb + ' runtime': "%.2f seconds" % runtime,
+            verb + ' runtime (cumulated)': "%.2f seconds" % sum(latencies),
             verb + ' executed': self.statistics.executed,
             verb + ' speed': (
-                "%.2f %s/s" % (self.statistics.executed / runtime
+                "%.2f %s/s" % ((self.statistics.executed * self._max_workers
+                                / sum(latencies))
                                if runtime != 0 else 0, verb)
             ),
             verb + ' failures': self.statistics.failures,
@@ -302,8 +304,7 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
         stats['measures per request'] = parsed_args.batch
         stats['measures push speed'] = (
             "%.2f push/s" % (
-                parsed_args.batch * pool.statistics.executed / runtime
-                if runtime != 0 else 0
+                parsed_args.batch * float(stats['push speed'][:-7])
             )
         )
 
