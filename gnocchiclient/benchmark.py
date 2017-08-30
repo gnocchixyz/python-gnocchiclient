@@ -14,6 +14,7 @@
 import argparse
 import datetime
 import functools
+import itertools
 import logging
 import math
 import random
@@ -40,13 +41,6 @@ def _pickle_method(m):
 
 
 six.moves.copyreg.pickle(types.MethodType, _pickle_method)
-
-
-def grouper(iterable, n, fillvalue=None):
-    "Collect data into fixed-length chunks or blocks"
-    # grouper('ABCDEFG', 3, 'x') --> ABC DEF
-    args = [iter(iterable)] * n
-    return six.moves.zip(*args)
 
 
 def _positive_non_zero_int(argument_value):
@@ -277,7 +271,7 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
 
         start = int(parsed_args.timestamp_start.strftime("%s"))
         end = int(parsed_args.timestamp_end.strftime("%s"))
-        count = parsed_args.count
+        count = parsed_args.batch
 
         if (end - start) < count:
             raise ValueError(
@@ -286,19 +280,19 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
 
         random_values = (random.randint(- 2 ** 32, 2 ** 32)
                          for _ in six.moves.range(count))
-        all_measures = ({"timestamp": ts, "value": v}
-                        for ts, v
-                        in six.moves.zip(
-                            six.moves.range(start,
-                                            end,
-                                            (end - start) // count),
-                            random_values))
+        measures = [{"timestamp": ts, "value": v}
+                    for ts, v
+                    in six.moves.zip(
+                        six.moves.range(start,
+                                        end,
+                                        (end - start) // count),
+                        random_values)]
 
-        measures = grouper(all_measures, parsed_args.batch)
-
+        times = parsed_args.count // parsed_args.batch
         futures = pool.map_job(functools.partial(
             self.app.client.metric.add_measures,
-            parsed_args.metric), measures, resource_id=parsed_args.resource_id)
+            parsed_args.metric), itertools.repeat(measures, times),
+            resource_id=parsed_args.resource_id)
         _, runtime, stats = pool.wait_job("push", futures)
 
         stats['measures per request'] = parsed_args.batch
