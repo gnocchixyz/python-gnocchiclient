@@ -350,4 +350,5 @@ class CliBenchmarkMeasuresShow(CliBenchmarkBase,
                                   start=parsed_args.start,
                                   stop=parsed_args.stop)
         result, runtime, stats = pool.wait_job("show", futures)
+        stats['measures per request'] = len(result[0])
         return self.dict2columns(stats)
