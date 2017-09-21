@@ -27,6 +27,7 @@ import iso8601
 from monotonic import monotonic as now  # noqa
 import six.moves
 
+from gnocchiclient import utils
 from gnocchiclient.v1 import metric_cli
 
 
@@ -244,12 +245,12 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                             default=(
                                 datetime.datetime.now(tz=iso8601.iso8601.UTC)
                                 - datetime.timedelta(days=365)),
-                            type=iso8601.parse_date,
+                            type=utils.parse_date,
                             help="First timestamp to use")
         parser.add_argument("--timestamp-end", "-e",
                             default=(
                                 datetime.datetime.now(tz=iso8601.iso8601.UTC)),
-                            type=iso8601.parse_date,
+                            type=utils.parse_date,
                             help="Last timestamp to use")
         parser.add_argument("--wait",
                             default=False,

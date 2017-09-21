@@ -56,6 +56,19 @@ For more details, check the `keystoneauth documentation`_.
 .. _`keystoneauth documentation`: https://docs.openstack.org/developer/keystoneauth/
 
 
+Timestamps
+++++++++++
+
+By default, timestamps are displayed in local time zone. If you prefer to see
+timestamps dispalyed in UTC time zones, you can pass the `--utc` option to the
+command.
+
+The `gnocchi` command line interface parses timestamps in the `ISO8601`_
+format. If no time zone is specified, timestamps are assumed to be in the local
+client time zone.
+
+.. _`ISO8601`: https://en.wikipedia.org/wiki/ISO_8601
+
 Commands descriptions
 +++++++++++++++++++++
 

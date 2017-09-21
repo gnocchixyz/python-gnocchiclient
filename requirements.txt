@@ -11,3 +11,4 @@ futurist
 iso8601
 monotonic
 pyparsing>=2.2.0
+python-dateutil
