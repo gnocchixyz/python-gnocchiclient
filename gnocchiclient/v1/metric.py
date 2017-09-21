@@ -38,11 +38,19 @@ class MetricManager(base.Manager):
         :param sorts: list of resource attributes to order by. (example
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
-
         """
         qs = utils.build_pagination_options(False, False, limit, marker,
                                             sorts)
-        return self._get("%s?%s" % (self.metric_url[:-1], qs)).json()
+        metrics = []
+        page_url = "%s?%s" % (self.metric_url[:-1], qs)
+        while page_url:
+            page = self._get(page_url)
+            metrics.extend(page.json())
+            if limit is None or len(metrics) < limit:
+                page_url = page.links.get("next", {'url': None})['url']
+            else:
+                break
+        return metrics
 
     @staticmethod
     def _ensure_metric_is_uuid(metric, attribute="resource_id"):
