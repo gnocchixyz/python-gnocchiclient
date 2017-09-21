@@ -14,6 +14,7 @@
 import datetime
 import uuid
 
+import iso8601
 import ujson
 
 from gnocchiclient import utils
@@ -202,7 +203,9 @@ class MetricManager(base.Manager):
             url = self.metric_url + metric + "/measures"
         else:
             url = self.resource_url % resource_id + metric + "/measures"
-        return self._get(url, params=params).json()
+        measures = self._get(url, params=params).json()
+        return [(iso8601.parse_date(ts), g, value)
+                for ts, g, value in measures]
 
     def aggregation(self, metrics, query=None,
                     start=None, stop=None, aggregation=None,
@@ -256,12 +259,24 @@ class MetricManager(base.Manager):
             for metric in metrics:
                 self._ensure_metric_is_uuid(metric)
             params['metric'] = metrics
-            return self._get("v1/aggregation/metric",
-                             params=params).json()
+            measures = self._get("v1/aggregation/metric",
+                                 params=params).json()
         else:
-            return self._post(
+            measures = self._post(
                 "v1/aggregation/resource/%s/metric/%s?%s" % (
                     resource_type, metrics,
                     utils.dict_to_querystring(params)),
                 headers={'Content-Type': "application/json"},
                 data=ujson.dumps(query)).json()
+
+        if groupby is None:
+            return [(iso8601.parse_date(ts), g, value)
+                    for ts, g, value in measures]
+
+        for group in measures:
+            group["measures"] = [
+                (iso8601.parse_date(ts), g, value)
+                for ts, g, value in group["measures"]
+            ]
+
+        return measures
