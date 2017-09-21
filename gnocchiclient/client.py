@@ -42,7 +42,7 @@ class SessionClient(adapter.Adapter):
         except k_exc.connection.UnknownConnectionError as e:
             raise exceptions.UnknownConnectionError(
                 message=str(e), url=url, method=method)
-        except k_exc.connection.ConnectionTimeout as e:
+        except k_exc.connection.ConnectTimeout as e:
             raise exceptions.ConnectionTimeout(
                 message=str(e), url=url, method=method)
         except k_exc.SSLError as e:
