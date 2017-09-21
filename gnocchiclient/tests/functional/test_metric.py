@@ -17,6 +17,7 @@ import uuid
 from gnocchiclient import auth
 from gnocchiclient import client
 from gnocchiclient.tests.functional import base
+from gnocchiclient import utils
 
 
 class MetricClientTest(base.ClientTestBase):
@@ -74,6 +75,41 @@ class MetricClientTest(base.ClientTestBase):
                               u" --limit 2")
         self.assertEqual(2, len(json.loads(result)))
 
+    def test_metric_measures_show_tz(self):
+        ap_name = str(uuid.uuid4())
+        # PREPARE AN ARCHIVE POLICY
+        self.gnocchi("archive-policy", params="create " + ap_name +
+                     " --back-window 0 -d granularity:1s,points:86400")
+        # CREATE METRIC
+        metric_name = str(uuid.uuid4())
+        result = self.gnocchi(
+            u'metric', params=u"create"
+            u" --archive-policy-name " + ap_name + " " + metric_name)
+        metric = json.loads(result)
+
+        # MEASURES ADD
+        self.gnocchi('measures',
+                     params=("add %s "
+                             "-m '2015-03-06T14:33:57Z@43.11' "
+                             "--measure '2015-03-06T16:34:12+02:00@12' ")
+                     % metric["id"], has_output=False)
+
+        # MEASURES SHOW
+        os.environ["TZ"] = "Europe/Paris"
+        result = self.gnocchi('measures', params="show --refresh " +
+                              metric["id"])
+        measures = json.loads(result)
+        self.assertEqual("2015-03-06T15:33:57+01:00", measures[0]['timestamp'])
+        self.assertEqual("2015-03-06T15:34:12+01:00", measures[1]['timestamp'])
+
+        # MEASURES SHOW
+        result = self.gnocchi('measures', params="show --utc --refresh " +
+                              metric["id"])
+        measures = json.loads(result)
+        # Check that --utc is honored
+        self.assertEqual("2015-03-06T14:33:57+00:00", measures[0]['timestamp'])
+        self.assertEqual("2015-03-06T14:34:12+00:00", measures[1]['timestamp'])
+
     def test_metric_scenario(self):
         # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create metric-test "
@@ -116,8 +152,8 @@ class MetricClientTest(base.ClientTestBase):
         # MEASURES ADD
         self.gnocchi('measures',
                      params=("add %s "
-                             "-m '2015-03-06T14:33:57@43.11' "
-                             "--measure '2015-03-06T14:34:12@12' ")
+                             "-m '2015-03-06T14:33:57Z@43.11' "
+                             "--measure '2015-03-06T14:34:12Z@12' ")
                      % metric["id"], has_output=False)
 
         # MEASURES GET with refresh
@@ -125,32 +161,39 @@ class MetricClientTest(base.ClientTestBase):
                               params=("show %s "
                                       "--aggregation mean "
                                       "--granularity 1 "
-                                      "--start 2015-03-06T14:32:00 "
-                                      "--stop 2015-03-06T14:36:00 "
+                                      "--start 2015-03-06T14:32:00Z "
+                                      "--stop 2015-03-06T14:36:00Z "
                                       "--refresh") % metric["id"])
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 1.0,
-                           'timestamp': '2015-03-06T14:33:57+00:00',
-                           'value': 43.11},
-                          {'granularity': 1.0,
-                           'timestamp': '2015-03-06T14:34:12+00:00',
-                           'value': 12.0}], measures)
+        self.assertEqual(
+            [{'granularity': 1.0,
+              'timestamp': utils.dt_to_localtz(
+                  utils.parse_date('2015-03-06T14:33:57+00:00')).isoformat(),
+              'value': 43.11},
+             {'granularity': 1.0,
+              'timestamp': utils.dt_to_localtz(
+                  utils.parse_date('2015-03-06T14:34:12+00:00')).isoformat(),
+              'value': 12.0}], measures)
 
         # MEASURES GET
         result = self.retry_gnocchi(
             5, 'measures', params=("show %s "
                                    "--aggregation mean "
                                    "--granularity 1 "
-                                   "--start 2015-03-06T14:32:00 "
-                                   "--stop 2015-03-06T14:36:00"
+                                   "--start 2015-03-06T14:32:00Z "
+                                   "--stop 2015-03-06T14:36:00Z"
                                    ) % metric["id"])
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 1.0,
-                           'timestamp': '2015-03-06T14:33:57+00:00',
-                           'value': 43.11},
-                          {'granularity': 1.0,
-                           'timestamp': '2015-03-06T14:34:12+00:00',
-                           'value': 12.0}], measures)
+        self.assertEqual([
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date('2015-03-06T14:33:57+00:00')).isoformat(),
+             'value': 43.11},
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date('2015-03-06T14:34:12+00:00')).isoformat(),
+             'value': 12.0}
+        ], measures)
 
         # MEASURES GET RESAMPLE
         result = self.retry_gnocchi(
@@ -161,9 +204,12 @@ class MetricClientTest(base.ClientTestBase):
                                    "--stop 2015-03-06T14:36:00"
                                    ) % metric["id"])
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 3600.0,
-                           'timestamp': u'2015-03-06T14:00:00+00:00',
-                           'value': 27.555}], measures)
+        self.assertEqual([
+            {'granularity': 3600.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:00:00+00:00')).isoformat(),
+             'value': 27.555}
+        ], measures)
 
         # MEASURES AGGREGATION
         result = self.gnocchi(
@@ -172,16 +218,20 @@ class MetricClientTest(base.ClientTestBase):
                                 "--aggregation mean "
                                 "--reaggregation sum "
                                 "--granularity 1 "
-                                "--start 2015-03-06T14:32:00 "
-                                "--stop 2015-03-06T14:36:00"
+                                "--start 2015-03-06T14:32:00Z "
+                                "--stop 2015-03-06T14:36:00Z"
                                 ) % metric["id"])
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:33:57+00:00',
-                           'value': 43.11},
-                          {'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:34:12+00:00',
-                           'value': 12.0}], measures)
+        self.assertEqual([
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date('2015-03-06T14:33:57+00:00')).isoformat(),
+             'value': 43.11},
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date('2015-03-06T14:34:12+00:00')).isoformat(),
+             'value': 12.0}
+        ], measures)
 
         # BATCHING
         measures = json.dumps({
@@ -276,8 +326,8 @@ class MetricClientTest(base.ClientTestBase):
         # MEASURES ADD
         self.gnocchi('measures',
                      params=("add metric-name -r metric-res "
-                             "-m '2015-03-06T14:33:57@43.11' "
-                             "--measure '2015-03-06T14:34:12@12'"),
+                             "-m '2015-03-06T14:33:57Z@43.11' "
+                             "--measure '2015-03-06T14:34:12Z@12'"),
                      has_output=False)
 
         # MEASURES AGGREGATION with refresh
@@ -288,16 +338,20 @@ class MetricClientTest(base.ClientTestBase):
                                 "-m metric-name "
                                 "--aggregation mean "
                                 "--needed-overlap 0 "
-                                "--start 2015-03-06T14:32:00 "
-                                "--stop 2015-03-06T14:36:00 "
+                                "--start 2015-03-06T14:32:00Z "
+                                "--stop 2015-03-06T14:36:00Z "
                                 "--refresh"))
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 1.0,
-                           'timestamp': '2015-03-06T14:33:57+00:00',
-                           'value': 43.11},
-                          {'granularity': 1.0,
-                           'timestamp': '2015-03-06T14:34:12+00:00',
-                           'value': 12.0}], measures)
+        self.assertEqual([
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date('2015-03-06T14:33:57+00:00')).isoformat(),
+             'value': 43.11},
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date('2015-03-06T14:34:12+00:00')).isoformat(),
+             'value': 12.0}
+        ], measures)
 
         # MEASURES AGGREGATION
         result = self.gnocchi(
@@ -307,15 +361,19 @@ class MetricClientTest(base.ClientTestBase):
                                 "-m metric-name "
                                 "--aggregation mean "
                                 "--needed-overlap 0 "
-                                "--start 2015-03-06T14:32:00 "
-                                "--stop 2015-03-06T14:36:00"))
+                                "--start 2015-03-06T14:32:00Z "
+                                "--stop 2015-03-06T14:36:00Z"))
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:33:57+00:00',
-                           'value': 43.11},
-                          {'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:34:12+00:00',
-                           'value': 12.0}], measures)
+        self.assertEqual([
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:33:57+00:00')).isoformat(),
+             'value': 43.11},
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:34:12+00:00')).isoformat(),
+             'value': 12.0}
+        ], measures)
 
         # MEASURES AGGREGATION WITH FILL
         result = self.gnocchi(
@@ -324,15 +382,19 @@ class MetricClientTest(base.ClientTestBase):
                                 "--resource-type \"generic\" "
                                 "-m metric-name --fill 0 "
                                 "--granularity 1 "
-                                "--start 2015-03-06T14:32:00 "
-                                "--stop 2015-03-06T14:36:00"))
+                                "--start 2015-03-06T14:32:00Z "
+                                "--stop 2015-03-06T14:36:00Z"))
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:33:57+00:00',
-                           'value': 43.11},
-                          {'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:34:12+00:00',
-                           'value': 12.0}], measures)
+        self.assertEqual([
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:33:57+00:00')).isoformat(),
+             'value': 43.11},
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:34:12+00:00')).isoformat(),
+             'value': 12.0}
+        ], measures)
 
         # MEASURES AGGREGATION RESAMPLE
         result = self.gnocchi(
@@ -342,12 +404,15 @@ class MetricClientTest(base.ClientTestBase):
                                 "-m metric-name --granularity 1 "
                                 "--aggregation mean --resample=3600 "
                                 "--needed-overlap 0 "
-                                "--start 2015-03-06T14:32:00 "
-                                "--stop 2015-03-06T14:36:00"))
+                                "--start 2015-03-06T14:32:00Z "
+                                "--stop 2015-03-06T14:36:00Z"))
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 3600.0,
-                           'timestamp': '2015-03-06T14:00:00+00:00',
-                           'value': 27.555}], measures)
+        self.assertEqual([
+            {'granularity': 3600.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date('2015-03-06T14:00:00+00:00')).isoformat(),
+             'value': 27.555}
+        ], measures)
 
         # MEASURES AGGREGATION GROUPBY
         result = self.gnocchi(
@@ -359,32 +424,40 @@ class MetricClientTest(base.ClientTestBase):
                                 "-m metric-name "
                                 "--aggregation mean "
                                 "--needed-overlap 0 "
-                                "--start 2015-03-06T14:32:00 "
-                                "--stop 2015-03-06T14:36:00"))
+                                "--start 2015-03-06T14:32:00Z "
+                                "--stop 2015-03-06T14:36:00Z"))
         measures = json.loads(result)
-        self.assertEqual([{'group': 'project_id: None, user_id: None',
-                           'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:33:57+00:00',
-                           'value': 43.11},
-                          {'group': 'project_id: None, user_id: None',
-                           'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:34:12+00:00',
-                           'value': 12.0}], measures)
+        self.assertEqual([
+            {'group': 'project_id: None, user_id: None',
+             'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:33:57+00:00')).isoformat(),
+             'value': 43.11},
+            {'group': 'project_id: None, user_id: None',
+             'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:34:12+00:00')).isoformat(),
+             'value': 12.0},
+        ], measures)
 
         # MEASURES GET
         result = self.gnocchi('measures',
                               params=("show metric-name -r metric-res "
                                       "--aggregation mean "
-                                      "--start 2015-03-06T14:32:00 "
-                                      "--stop 2015-03-06T14:36:00"))
+                                      "--start 2015-03-06T14:32:00Z "
+                                      "--stop 2015-03-06T14:36:00Z"))
 
         measures = json.loads(result)
-        self.assertEqual([{'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:33:57+00:00',
-                           'value': 43.11},
-                          {'granularity': 1.0,
-                           'timestamp': u'2015-03-06T14:34:12+00:00',
-                           'value': 12.0}], measures)
+        self.assertEqual([
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:33:57+00:00')).isoformat(),
+             'value': 43.11},
+            {'granularity': 1.0,
+             'timestamp': utils.dt_to_localtz(
+                 utils.parse_date(u'2015-03-06T14:34:12+00:00')).isoformat(),
+             'value': 12.0},
+        ], measures)
 
         # BATCHING
         measures = json.dumps({'metric-res': {'metric-name': [{

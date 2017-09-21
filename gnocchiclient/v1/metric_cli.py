@@ -169,7 +169,25 @@ class DeprecatedCliMetricDelete(CliMetricDelete):
         return super(DeprecatedCliMetricDelete, self).take_action(parsed_args)
 
 
-class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
+class CliMeasuresReturn(lister.Lister):
+    def get_parser(self, prog_name):
+        parser = super(CliMeasuresReturn, self).get_parser(prog_name)
+        parser.add_argument("--utc", help="Return timestamps as UTC",
+                            default=False,
+                            action="store_true")
+        return parser
+
+    @staticmethod
+    def format_measures_with_tz(parsed_args, measures):
+        if parsed_args.utc:
+            t = lambda x: x
+        else:
+            t = utils.dt_to_localtz
+        return [(t(dt).isoformat(), g, v) for dt, g, v in measures]
+
+
+class CliMeasuresShow(CliMetricWithResourceID, CliMeasuresReturn,
+                      lister.Lister):
     """Get measurements of a metric"""
 
     COLS = ('timestamp', 'granularity', 'value')
@@ -181,8 +199,10 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
         parser.add_argument("--aggregation",
                             help="aggregation to retrieve")
         parser.add_argument("--start",
+                            type=utils.parse_date,
                             help="beginning of the period")
         parser.add_argument("--stop",
+                            type=utils.parse_date,
                             help="end of the period")
         parser.add_argument("--granularity",
                             help="granularity to retrieve")
@@ -204,9 +224,7 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
             refresh=parsed_args.refresh,
             resample=parsed_args.resample
         )
-        # Convert datetime.datetime into string
-        return self.COLS, [(ts.isoformat(), g, value)
-                           for ts, g, value in measures]
+        return self.COLS, self.format_measures_with_tz(parsed_args, measures)
 
 
 class CliMeasuresAddBase(CliMetricWithResourceID):
@@ -221,7 +239,8 @@ class CliMeasuresAdd(CliMeasuresAddBase):
 
     def measure(self, measure):
         timestamp, __, value = measure.rpartition("@")
-        return {'timestamp': timestamp, 'value': float(value)}
+        return {'timestamp': utils.parse_date(timestamp).isoformat(),
+                'value': float(value)}
 
     def get_parser(self, prog_name):
         parser = super(CliMeasuresAdd, self).get_parser(prog_name)
@@ -275,7 +294,7 @@ class CliResourcesMetricsMeasuresBatch(CliMeasuresBatch):
                 json.load(f), create_metrics=parsed_args.create_metrics)
 
 
-class CliMeasuresAggregation(lister.Lister):
+class CliMeasuresAggregation(CliMeasuresReturn):
     """Get measurements of aggregated metrics"""
 
     COLS = ('timestamp', 'granularity', 'value')
@@ -289,8 +308,10 @@ class CliMeasuresAggregation(lister.Lister):
         parser.add_argument("--reaggregation",
                             help="groupby aggregation function to retrieve")
         parser.add_argument("--start",
+                            type=utils.parse_date,
                             help="beginning of the period")
         parser.add_argument("--stop",
+                            type=utils.parse_date,
                             help="end of the period")
         parser.add_argument("--granularity",
                             help="granularity to retrieve")
@@ -339,8 +360,9 @@ class CliMeasuresAggregation(lister.Lister):
             for g in measures:
                 group_name = ", ".join("%s: %s" % (k, g['group'][k])
                                        for k in sorted(g['group']))
-                for ts, g, value in g['measures']:
-                    ms.append((group_name, ts.isoformat(), g, value))
-                return ('group',) + self.COLS, ms
-        return self.COLS, [(ts.isoformat(), g, value)
-                           for ts, g, value in measures]
+                for m in g['measures']:
+                    i = [group_name]
+                    i.extend(self.format_measures_with_tz(parsed_args, [m])[0])
+                    ms.append(i)
+            return ('group',) + self.COLS, ms
+        return self.COLS, self.format_measures_with_tz(parsed_args, measures)

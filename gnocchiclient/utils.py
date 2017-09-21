@@ -11,7 +11,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+from dateutil import tz
+import iso8601
 import pyparsing as pp
 import six
 from six.moves.urllib import parse as urllib_parse
@@ -223,3 +224,21 @@ def get_client(obj):
         # TODO(sileht): Remove this when OSC is able
         # to install the gnocchi client binary itself
         return obj.app.client
+
+
+LOCAL_TIMEZONE = tz.gettz()
+
+
+def parse_date(s):
+    """Parse date from string.
+
+    If no timezone is specified, default is assumed to be local time zone.
+
+    :param s: The date to parse.
+    :type s: str
+    """
+    return iso8601.parse_date(s, LOCAL_TIMEZONE)
+
+
+def dt_to_localtz(d):
+    return d.astimezone(LOCAL_TIMEZONE)
