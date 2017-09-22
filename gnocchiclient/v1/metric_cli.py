@@ -204,7 +204,9 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
             refresh=parsed_args.refresh,
             resample=parsed_args.resample
         )
-        return self.COLS, measures
+        # Convert datetime.datetime into string
+        return self.COLS, [(ts.isoformat(), g, value)
+                           for ts, g, value in measures]
 
 
 class CliMeasuresAddBase(CliMetricWithResourceID):
@@ -337,9 +339,8 @@ class CliMeasuresAggregation(lister.Lister):
             for g in measures:
                 group_name = ", ".join("%s: %s" % (k, g['group'][k])
                                        for k in sorted(g['group']))
-                for m in g['measures']:
-                    i = [group_name]
-                    i.extend(m)
-                    ms.append(i)
-            return ('group',) + self.COLS, ms
-        return self.COLS, measures
+                for ts, g, value in g['measures']:
+                    ms.append((group_name, ts.isoformat(), g, value))
+                return ('group',) + self.COLS, ms
+        return self.COLS, [(ts.isoformat(), g, value)
+                           for ts, g, value in measures]

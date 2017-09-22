@@ -108,10 +108,10 @@ class MetricClientTest(base.ClientTestBase):
                                       "--refresh") % metric["id"])
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:33:57+00:00',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
                            'value': '43.11'},
                           {'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:34:12+00:00',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
         # MEASURES GET
@@ -124,10 +124,10 @@ class MetricClientTest(base.ClientTestBase):
                                    ) % metric["id"])
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:33:57+00:00',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
                            'value': '43.11'},
                           {'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:34:12+00:00',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
         # MEASURES GET RESAMPLE
@@ -140,7 +140,7 @@ class MetricClientTest(base.ClientTestBase):
                                    ) % metric["id"])
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '3600.0',
-                           'timestamp': '2015-03-06 14:00:00+00:00',
+                           'timestamp': '2015-03-06T14:00:00+00:00',
                            'value': '27.555'}], measures)
 
         # MEASURES AGGREGATION
@@ -155,10 +155,10 @@ class MetricClientTest(base.ClientTestBase):
                                 ) % metric["id"])
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:33:57+00:00',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
                            'value': '43.11'},
                           {'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:34:12+00:00',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
         # BATCHING
@@ -268,10 +268,10 @@ class MetricClientTest(base.ClientTestBase):
                                 "--refresh"))
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:33:57+00:00',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
                            'value': '43.11'},
                           {'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:34:12+00:00',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
         # MEASURES AGGREGATION
@@ -286,10 +286,10 @@ class MetricClientTest(base.ClientTestBase):
                                 "--stop 2015-03-06T14:36:00"))
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:33:57+00:00',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
                            'value': '43.11'},
                           {'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:34:12+00:00',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
         # MEASURES AGGREGATION WITH FILL
@@ -303,10 +303,10 @@ class MetricClientTest(base.ClientTestBase):
                                 "--stop 2015-03-06T14:36:00"))
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:33:57+00:00',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
                            'value': '43.11'},
                           {'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:34:12+00:00',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
         # MEASURES AGGREGATION RESAMPLE
@@ -321,7 +321,7 @@ class MetricClientTest(base.ClientTestBase):
                                 "--stop 2015-03-06T14:36:00"))
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '3600.0',
-                           'timestamp': '2015-03-06 14:00:00+00:00',
+                           'timestamp': '2015-03-06T14:00:00+00:00',
                            'value': '27.555'}], measures)
 
         # MEASURES AGGREGATION GROUPBY
@@ -339,11 +339,11 @@ class MetricClientTest(base.ClientTestBase):
         measures = self.parser.listing(result)
         self.assertEqual([{'group': 'project_id: None, user_id: None',
                            'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:33:57+00:00',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
                            'value': '43.11'},
                           {'group': 'project_id: None, user_id: None',
                            'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:34:12+00:00',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
         # MEASURES GET
@@ -355,10 +355,10 @@ class MetricClientTest(base.ClientTestBase):
 
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:33:57+00:00',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
                            'value': '43.11'},
                           {'granularity': '1.0',
-                           'timestamp': '2015-03-06 14:34:12+00:00',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
         # BATCHING
