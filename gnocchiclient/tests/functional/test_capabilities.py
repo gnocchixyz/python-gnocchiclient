@@ -9,6 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import json
 
 from gnocchiclient.tests.functional import base
 
@@ -17,6 +18,6 @@ class CapabilitiesClientTest(base.ClientTestBase):
     def test_capabilities_scenario(self):
         # GET
         result = self.gnocchi('capabilities', params="list")
-        caps = self.parser.listing(result)[0]
+        caps = json.loads(result)
         self.assertIsNotNone(caps)
-        self.assertEqual('aggregation_methods', caps['Field'])
+        self.assertIn('aggregation_methods', caps)

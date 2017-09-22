@@ -9,6 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import json
 import uuid
 
 from gnocchiclient.tests.functional import base
@@ -27,7 +28,7 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
             u'archive-policy-rule', params=u"create test"
             u" --archive-policy-name %s"
             u" --metric-pattern 'disk.io.*'" % apname)
-        policy_rule = self.details_multiple(result)[0]
+        policy_rule = json.loads(result)
         self.assertEqual('test', policy_rule["name"])
 
         # CREATE FAIL
@@ -36,18 +37,18 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
             u" --archive-policy-name high"
             u" --metric-pattern 'disk.io.*'",
             fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.split('\n'),
-            "Archive policy rule test already exists (HTTP 409)")
+        self.assertEqual(
+            "Archive policy rule test already exists (HTTP 409)\n",
+            result)
         # GET
         result = self.gnocchi(
             'archive-policy-rule', params="show test")
-        policy_rule = self.details_multiple(result)[0]
+        policy_rule = json.loads(result)
         self.assertEqual("test", policy_rule["name"])
 
         # LIST
         result = self.gnocchi('archive-policy-rule', params="list")
-        rules = self.parser.listing(result)
+        rules = json.loads(result)
         rule_from_list = [p for p in rules
                           if p['name'] == 'test'][0]
         for field in ["metric_pattern", "archive_policy_name"]:
@@ -61,49 +62,50 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
         result = self.gnocchi(
             u'archive-policy-rule', params=u'update to_rename'
             u' --name renamed')
-        policy_rule = self.details_multiple(result)[0]
+        policy_rule = json.loads(result)
         self.assertEqual('renamed', policy_rule["name"])
 
         result = self.gnocchi(
             'archive-policy-rule', params="show renamed")
-        policy_rule = self.details_multiple(result)[0]
+        policy_rule = json.loads(result)
         self.assertEqual("renamed", policy_rule["name"])
 
         # CONFIRM RENAME
         result = self.gnocchi('archive-policy-rule',
                               params="show to_rename",
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.split('\n'),
-            "Archive policy rule to_rename does not exist (HTTP 404)")
+        self.assertEqual(
+            "Archive policy rule to_rename does not exist (HTTP 404)\n",
+            result)
 
         # RENAME FAIL
         result = self.gnocchi(
             'archive-policy-rule', params='update test'
             ' --name renamed',
             fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.split('\n'),
+        self.assertEqual(
             'Archive policy rule test does not support change:'
-            ' Archive policy rule renamed already exists. (HTTP 400)')
+            ' Archive policy rule renamed already exists. (HTTP 400)\n',
+            result)
 
         # DELETE
-        result = self.gnocchi('archive-policy-rule',
-                              params="delete test")
-        self.assertEqual("", result)
+        self.gnocchi('archive-policy-rule', params="delete test",
+                     has_output=False)
 
         # GET FAIL
         result = self.gnocchi('archive-policy-rule',
                               params="show test",
-                              fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.split('\n'),
-            "Archive policy rule test does not exist (HTTP 404)")
+                              fail_ok=True, merge_stderr=True,
+                              has_output=False)
+        self.assertEqual(
+            "Archive policy rule test does not exist (HTTP 404)\n",
+            result)
 
         # DELETE FAIL
         result = self.gnocchi('archive-policy-rule',
                               params="delete test",
-                              fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.split('\n'),
-            "Archive policy rule test does not exist (HTTP 404)")
+                              fail_ok=True, merge_stderr=True,
+                              has_output=False)
+        self.assertEqual(
+            "Archive policy rule test does not exist (HTTP 404)\n",
+            result)

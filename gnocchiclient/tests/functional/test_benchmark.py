@@ -9,6 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import json
 import uuid
 
 from gnocchiclient.tests.functional import base
@@ -29,7 +30,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
         result = self.gnocchi(
             u'benchmark', params=u"metric create -n 10 -a %s" % apname)
-        result = self.details_multiple(result)[0]
+        result = json.loads(result)
         self.assertEqual(10, int(result['create executed']))
         self.assertLessEqual(int(result['create failures']), 10)
         self.assertLessEqual(int(result['delete executed']),
@@ -37,7 +38,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
         result = self.gnocchi(
             u'benchmark', params=u"metric create -k -n 10 -a %s" % apname)
-        result = self.details_multiple(result)[0]
+        result = json.loads(result)
         self.assertEqual(10, int(result['create executed']))
         self.assertLessEqual(int(result['create failures']), 10)
         self.assertNotIn('delete executed', result)
@@ -50,11 +51,11 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
         result = self.gnocchi(
             u'metric', params=u"create -a %s" % apname)
-        metric = self.details_multiple(result)[0]
+        metric = json.loads(result)
 
         result = self.gnocchi(
             u'benchmark', params=u"metric show -n 10 %s" % metric['id'])
-        result = self.details_multiple(result)[0]
+        result = json.loads(result)
         self.assertEqual(10, int(result['show executed']))
         self.assertLessEqual(int(result['show failures']), 10)
 
@@ -66,11 +67,11 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
         result = self.gnocchi(
             u'metric', params=u"create -a %s" % apname)
-        metric = self.details_multiple(result)[0]
+        metric = json.loads(result)
 
         result = self.gnocchi(
             u'benchmark', params=u"measures add -n 10 -b 4 %s" % metric['id'])
-        result = self.details_multiple(result)[0]
+        result = json.loads(result)
         self.assertEqual(2, int(result['push executed']))
         self.assertLessEqual(int(result['push failures']), 2)
 
@@ -78,7 +79,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
             u'benchmark',
             params=u"measures add -s 2010-01-01 -n 10 -b 4 %s"
             % metric['id'])
-        result = self.details_multiple(result)[0]
+        result = json.loads(result)
         self.assertEqual(2, int(result['push executed']))
         self.assertLessEqual(int(result['push failures']), 2)
 
@@ -86,7 +87,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
             u'benchmark',
             params=u"measures add --wait -s 2010-01-01 -n 10 -b 4 %s"
             % metric['id'])
-        result = self.details_multiple(result)[0]
+        result = json.loads(result)
         self.assertEqual(2, int(result['push executed']))
         self.assertLessEqual(int(result['push failures']), 2)
         self.assertIn("extra wait to process measures", result)
@@ -99,12 +100,12 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
         result = self.gnocchi(
             u'metric', params=u"create -a %s" % apname)
-        metric = self.details_multiple(result)[0]
+        metric = json.loads(result)
 
         result = self.gnocchi(
             u'benchmark',
             params=u"measures show -n 2 %s"
             % metric['id'])
-        result = self.details_multiple(result)[0]
+        result = json.loads(result)
         self.assertEqual(2, int(result['show executed']))
         self.assertLessEqual(int(result['show failures']), 2)
