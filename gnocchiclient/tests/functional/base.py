@@ -16,38 +16,33 @@ import six
 import subprocess
 import time
 
-from tempest.lib.cli import base
-from tempest.lib import exceptions
+import testtools
 
 
-class GnocchiClient(object):
-    """Gnocchi Client for tempest-lib
+class ClientTestBase(testtools.TestCase):
+    """Base class for gnocchiclient tests.
 
-    This client doesn't use any authentication system
+    Establishes the gnocchi client and retrieves the essential environment
+    information.
     """
 
-    def __init__(self):
+    def setUp(self):
+        super(ClientTestBase, self).setUp()
         self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
         self.endpoint = os.environ.get('PIFPAF_GNOCCHI_HTTP_URL')
 
     def gnocchi(self, action, flags='', params='',
-                fail_ok=False, merge_stderr=False, input=None):
-        creds = ("--os-auth-plugin gnocchi-basic "
-                 "--user admin "
-                 "--endpoint %s") % self.endpoint
+                fail_ok=False, merge_stderr=False, input=None,
+                has_output=True):
+        flags = ((("--os-auth-plugin gnocchi-basic "
+                   "--user admin "
+                   "--endpoint %s") % self.endpoint)
+                 + ' ' + flags)
 
-        flags = creds + ' ' + flags
+        fmt = '-f json' if has_output and action != 'help' else ""
 
-        # FIXME(sileht): base.execute is broken in py3 in tempest-lib
-        # see: https://review.openstack.org/#/c/218870/
-        # return base.execute("gnocchi", action, flags, params, fail_ok,
-        #                      merge_stderr, self.cli_dir)
-
-        cmd = "gnocchi"
-
-        # from fixed tempestlib
-        cmd = ' '.join([os.path.join(self.cli_dir, cmd),
-                        flags, action, params])
+        cmd = ' '.join([os.path.join(self.cli_dir, "gnocchi"),
+                        flags, action, params, fmt])
         if six.PY2:
             cmd = cmd.encode('utf-8')
         cmd = shlex.split(cmd)
@@ -59,25 +54,18 @@ class GnocchiClient(object):
         proc = subprocess.Popen(cmd, stdin=stdin, stdout=stdout, stderr=stderr)
         result, result_err = proc.communicate(input=input)
         if not fail_ok and proc.returncode != 0:
-            raise exceptions.CommandFailed(proc.returncode,
-                                           cmd,
-                                           result,
-                                           result_err)
-        if six.PY2:
-            return result
-        else:
-            return os.fsdecode(result)
+            raise RuntimeError("Problem running command",
+                               proc.returncode,
+                               cmd,
+                               result,
+                               result_err)
+        if not six.PY2:
+            result = os.fsdecode(result)
 
+        if not has_output and not fail_ok and action != 'help':
+            self.assertEqual("", result)
 
-class ClientTestBase(base.ClientTestBase):
-    """Base class for gnocchiclient tests.
-
-    Establishes the gnocchi client and retrieves the essential environment
-    information.
-    """
-
-    def _get_clients(self):
-        return GnocchiClient()
+        return result
 
     def retry_gnocchi(self, retry, *args, **kwargs):
         result = ""
@@ -87,29 +75,3 @@ class ClientTestBase(base.ClientTestBase):
                 time.sleep(1)
                 retry -= 1
         return result
-
-    def gnocchi(self, *args, **kwargs):
-        return self.clients.gnocchi(*args, **kwargs)
-
-    def details_multiple(self, output_lines, with_label=False):
-        """Return list of dicts with item details from cli output tables.
-
-        If with_label is True, key '__label' is added to each items dict.
-        For more about 'label' see OutputParser.tables().
-
-        NOTE(sileht): come from tempest-lib just because cliff use
-        Field instead of Property as first columun header.
-        """
-        items = []
-        tables_ = self.parser.tables(output_lines)
-        for table_ in tables_:
-            if ('Field' not in table_['headers']
-                    or 'Value' not in table_['headers']):
-                raise exceptions.InvalidStructure()
-            item = {}
-            for value in table_['values']:
-                item[value[0]] = value[1]
-            if with_label:
-                item['__label'] = table_['label']
-            items.append(item)
-        return items

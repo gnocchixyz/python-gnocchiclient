@@ -9,8 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-
+import json
 import uuid
 
 from gnocchiclient.tests.functional import base
@@ -21,12 +20,12 @@ class ResourceTypeClientTest(base.ClientTestBase):
     RESOURCE_ID = str(uuid.uuid4())
 
     def test_help(self):
-        self.gnocchi("help", params="resource list")
+        self.gnocchi("help", params="resource list", has_output=False)
 
     def test_resource_type_scenario(self):
         # LIST
         result = self.gnocchi('resource-type', params="list")
-        r = self.parser.listing(result)
+        r = json.loads(result)
         self.assertEqual([{'attributes': '', 'name': 'generic'}], r)
 
         # CREATE
@@ -34,7 +33,7 @@ class ResourceTypeClientTest(base.ClientTestBase):
             u'resource-type',
             params=u"create -a foo:string:1:max_length=16 "
                    "-a bar:number:no:max=32 %s" % self.RESOURCE_TYPE)
-        resource = self.details_multiple(result)[0]
+        resource = json.loads(result)
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
         self.assertEqual(
             "max_length=16, min_length=0, required=True, type=string",
@@ -43,7 +42,7 @@ class ResourceTypeClientTest(base.ClientTestBase):
         # SHOW
         result = self.gnocchi(
             u'resource-type', params=u"show %s" % self.RESOURCE_TYPE)
-        resource = self.details_multiple(result)[0]
+        resource = json.loads(result)
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
         self.assertEqual(
             "max_length=16, min_length=0, required=True, type=string",
@@ -54,7 +53,7 @@ class ResourceTypeClientTest(base.ClientTestBase):
             u'resource-type',
             params=u"update -r foo "
             "-a new:number:no:max=16 %s" % self.RESOURCE_TYPE)
-        resource = self.details_multiple(result)[0]
+        resource = json.loads(result)
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
         self.assertNotIn("attributes/foo", resource)
         self.assertEqual(
@@ -64,7 +63,7 @@ class ResourceTypeClientTest(base.ClientTestBase):
         # SHOW
         result = self.gnocchi(
             u'resource-type', params=u"show %s" % self.RESOURCE_TYPE)
-        resource = self.details_multiple(result)[0]
+        resource = json.loads(result)
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
         self.assertNotIn("attributes/foo", resource)
         self.assertEqual(
@@ -75,30 +74,34 @@ class ResourceTypeClientTest(base.ClientTestBase):
         result = self.gnocchi(
             u'resource', params=(u"create %s -t %s -a new:5") %
             (self.RESOURCE_ID, self.RESOURCE_TYPE))
-        resource = self.details_multiple(result)[0]
+        resource = json.loads(result)
         self.assertEqual(self.RESOURCE_ID, resource["id"])
-        self.assertEqual('5.0', resource["new"])
+        self.assertEqual(5.0, resource["new"])
 
         # Delete the resource
-        self.gnocchi('resource', params="delete %s" % self.RESOURCE_ID)
+        self.gnocchi('resource', params="delete %s" % self.RESOURCE_ID,
+                     has_output=False)
 
         # DELETE
-        result = self.gnocchi('resource-type',
-                              params="delete %s" % self.RESOURCE_TYPE)
-        self.assertEqual("", result)
+        self.gnocchi('resource-type',
+                     params="delete %s" % self.RESOURCE_TYPE,
+                     has_output=False)
 
         # DELETE AGAIN
         result = self.gnocchi('resource-type',
                               params="delete %s" % self.RESOURCE_TYPE,
-                              fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.split('\n'),
-            "Resource type %s does not exist (HTTP 404)" % self.RESOURCE_TYPE)
+                              fail_ok=True, merge_stderr=True,
+                              has_output=False)
+        self.assertEqual(
+            "Resource type %s does not exist (HTTP 404)\n"
+            % self.RESOURCE_TYPE,
+            result)
 
         # SHOW AGAIN
         result = self.gnocchi(u'resource-type',
                               params=u"show %s" % self.RESOURCE_TYPE,
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(
-            result.split('\n'),
-            "Resource type %s does not exist (HTTP 404)" % self.RESOURCE_TYPE)
+        self.assertEqual(
+            "Resource type %s does not exist (HTTP 404)\n"
+            % self.RESOURCE_TYPE,
+            result)
