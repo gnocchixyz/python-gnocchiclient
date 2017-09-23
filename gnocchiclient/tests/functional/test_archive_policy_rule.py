@@ -53,6 +53,16 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
         for field in ["metric_pattern", "archive_policy_name"]:
             self.assertEqual(policy_rule[field], rule_from_list[field])
 
+        # PATCH
+        result = self.gnocchi(
+            u'archive-policy-rule', params=u"create test-rename"
+            u" --archive-policy-name %s"
+            u" --metric-pattern 'disk.io.*'" % apname)
+        result = self.gnocchi('archive-policy-rule',
+                              params="rename test-rename renamed")
+        policy_rule = self.details_multiple(result)[0]
+        self.assertEqual("renamed", policy_rule["name"])
+
         # DELETE
         result = self.gnocchi('archive-policy-rule',
                               params="delete test")

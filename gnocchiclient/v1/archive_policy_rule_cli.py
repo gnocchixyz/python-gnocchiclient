@@ -66,6 +66,26 @@ class CliArchivePolicyRuleCreate(show.ShowOne):
         return self.dict2columns(policy)
 
 
+class CliArchivePolicyRuleRename(show.ShowOne):
+    """Rename an archive policy rule"""
+
+    def get_parser(self, prog_name):
+        parser = super(CliArchivePolicyRuleRename, self).get_parser(prog_name)
+        parser.add_argument("name",
+                            help=("Name of the archive policy rule "
+                                  " to be renamed"))
+        parser.add_argument("new_name",
+                            help="New name of the archive policy rule")
+
+        return parser
+
+    def take_action(self, parsed_args):
+        rule = utils.get_client(self).archive_policy_rule.rename(
+            parsed_args.name,
+            parsed_args.new_name)
+        return self.dict2columns(rule)
+
+
 class CliArchivePolicyRuleDelete(command.Command):
     """Delete an archive policy rule"""
 
