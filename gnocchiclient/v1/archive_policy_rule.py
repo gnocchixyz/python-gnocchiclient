@@ -41,6 +41,20 @@ class ArchivePolicyRuleManager(base.Manager):
             self.url, headers={'Content-Type': "application/json"},
             data=ujson.dumps(archive_policy_rule)).json()
 
+    def rename(self, name, new_name):
+        """Rename archive policy rule
+
+        :param name: Name of the archive policy rule to be renamed
+        :type name: str
+        :param new_name: New name of the archive policy
+        :type new_name: str
+        """
+        body = ujson.dumps({'name': new_name})
+        return self._patch(
+            self.url + name,
+            headers={'Content-Type': "application/json"},
+            data=body).json()
+
     def delete(self, name):
         """Delete an archive policy rule
 

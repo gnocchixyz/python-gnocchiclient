@@ -61,6 +61,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "archive-policy-rule list": ap_rule_cli.CliArchivePolicyRuleList,
         "archive-policy-rule show": ap_rule_cli.CliArchivePolicyRuleShow,
         "archive-policy-rule create": ap_rule_cli.CliArchivePolicyRuleCreate,
+        "archive-policy-rule rename": ap_rule_cli.CliArchivePolicyRuleRename,
         "archive-policy-rule delete": ap_rule_cli.CliArchivePolicyRuleDelete,
         "metric list": metric_cli.CliMetricList,
         "metric show": metric_cli.CliMetricShow,
