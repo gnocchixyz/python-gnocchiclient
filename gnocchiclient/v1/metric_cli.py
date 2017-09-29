@@ -107,12 +107,6 @@ class CliMetricCreateBase(show.ShowOne, CliMetricWithResourceID):
                             help="name of the archive policy")
         return parser
 
-    def take_action(self, parsed_args):
-        metric = utils.dict_from_parsed_args(parsed_args,
-                                             ["archive_policy_name",
-                                              "resource_id"])
-        return self._take_action(metric, parsed_args)
-
 
 class CliMetricCreate(CliMetricCreateBase):
     """Create a metric"""
@@ -126,15 +120,17 @@ class CliMetricCreate(CliMetricCreateBase):
                             help="unit of the metric")
         return parser
 
-    def _take_action(self, metric, parsed_args):
-        if parsed_args.name:
-            metric['name'] = parsed_args.name
-        if parsed_args.unit:
-            metric['unit'] = parsed_args.unit
-        metric = utils.get_client(self).metric.create(metric)
+    def take_action(self, parsed_args):
+        metric = utils.get_client(self).metric._create_new(
+            archive_policy_name=parsed_args.archive_policy_name,
+            name=parsed_args.name,
+            resource_id=parsed_args.resource_id,
+            unit=parsed_args.unit,
+        )
         utils.format_resource_for_metric(metric)
-        metric['archive_policy/name'] = metric["archive_policy"]["name"]
-        del metric['archive_policy']
+        if 'archive_policy' in metric:
+            metric['archive_policy/name'] = metric["archive_policy"]["name"]
+            del metric['archive_policy']
         del metric['created_by_user_id']
         del metric['created_by_project_id']
         return self.dict2columns(metric)

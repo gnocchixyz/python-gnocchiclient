@@ -11,3 +11,4 @@ futurist
 iso8601
 monotonic
 python-dateutil
+debtcollector

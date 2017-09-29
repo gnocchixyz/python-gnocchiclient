@@ -207,13 +207,15 @@ class CliBenchmarkMetricCreate(CliBenchmarkBase,
                             help="Keep created metrics")
         return parser
 
-    def _take_action(self, metric, parsed_args):
+    def take_action(self, parsed_args):
         pool = BenchmarkPool(parsed_args.workers)
 
         LOG.info("Creating metrics")
-        futures = pool.submit_job(parsed_args.count,
-                                  self.app.client.metric.create,
-                                  metric, refetch_metric=False)
+        futures = pool.submit_job(
+            parsed_args.count,
+            self.app.client.metric._create_new,
+            archive_policy_name=parsed_args.archive_policy_name,
+            resource_id=parsed_args.resource_id)
         created_metrics, runtime, stats = pool.wait_job("create", futures)
 
         if not parsed_args.keep:

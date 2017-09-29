@@ -14,6 +14,7 @@
 import datetime
 import uuid
 
+from debtcollector import removals
 import iso8601
 import ujson
 
@@ -77,13 +78,76 @@ class MetricManager(base.Manager):
             url = (self.resource_url % resource_id) + metric
         return self._get(url).json()
 
-    # FIXME(jd): remove refetch_metric when LP#1497171 is fixed
-    def create(self, metric, refetch_metric=True):
+    # FIXME(jd): This is what create will be after debtcollector warnings have
+    # been removed. We provide it right now for the benchmark code, that can't
+    # pickle a debtcollector-ed method.
+    def _create_new(self, name=None, archive_policy_name=None,
+                    resource_id=None, unit=None):
         """Create an metric
 
-        :param metric: The metric
-        :type metric: dict
+        :param name: Metric name.
+        :type name: str
+        :param archive_policy_name: Archive policy name.
+        :type archive_policy_name: str
+        :param resource_id: The resource ID to attach the metric to.
+        :type resource_id: str
+        :param unit: The unit of the metric.
+        :type unit: str
         """
+
+        metric = {}
+        if name is not None:
+            metric["name"] = name
+        if archive_policy_name is not None:
+            metric["archive_policy_name"] = archive_policy_name
+        if unit is not None:
+            metric["unit"] = unit
+
+        if resource_id is None:
+            return self._post(
+                self.metric_url, headers={'Content-Type': "application/json"},
+                data=ujson.dumps(metric)).json()
+
+        if name is None:
+            raise TypeError(
+                "Metric name is required if resource_id is set")
+
+        return self._post(
+            self.resource_url % resource_id,
+            headers={'Content-Type': "application/json"},
+            data=ujson.dumps({name: metric})).json()[0]
+
+    # FIXME(jd): remove refetch_metric when LP#1497171 is fixed
+    @removals.removed_kwarg("refetch_metric")
+    @removals.removed_kwarg("metric")
+    def create(self, metric=None, refetch_metric=True,
+               name=None,
+               archive_policy_name=None,
+               resource_id=None,
+               unit=None):
+        """Create an metric
+
+        :param name: Metric name.
+        :type name: str
+        :param archive_policy_name: Archive policy name.
+        :type archive_policy_name: str
+        :param resource_id: The resource ID to attach the metric to.
+        :type resource_id: str
+        :param unit: The unit of the metric.
+        :type unit: str
+        """
+
+        if metric is None:
+            metric = {}
+            if name is not None:
+                metric["name"] = name
+            if archive_policy_name is not None:
+                metric["archive_policy_name"] = archive_policy_name
+            if resource_id is not None:
+                metric["resource_id"] = resource_id
+            if unit is not None:
+                metric["unit"] = unit
+
         resource_id = metric.get('resource_id')
 
         if resource_id is None:
