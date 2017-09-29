@@ -126,8 +126,8 @@ class MetricClientTest(base.ClientTestBase):
         self.assertEqual("admin", metric["creator"])
         self.assertEqual('some-name', metric["name"])
         self.assertIsNone(metric["unit"])
-        self.assertIsNone(metric["resource/id"])
-        self.assertIn("metric-test", metric["archive_policy/name"])
+        self.assertIsNone(metric["resource_id"])
+        self.assertIn("metric-test", metric["archive_policy_name"])
 
         # CREATE WITH UNIT
         result = self.gnocchi(
@@ -139,12 +139,19 @@ class MetricClientTest(base.ClientTestBase):
         self.assertEqual("admin", metric["creator"])
         self.assertEqual('another-name', metric["name"])
         self.assertEqual('some-unit', metric["unit"])
-        self.assertIsNone(metric["resource/id"])
-        self.assertIn("metric-test", metric["archive_policy/name"])
+        self.assertIsNone(metric["resource_id"])
+        self.assertIn("metric-test", metric["archive_policy_name"])
 
         # GET
         result = self.gnocchi('metric', params="show %s" % metric["id"])
         metric_get = json.loads(result)
+        # `metric show` format resource/*, `metric create` does not
+        metric_get['resource_id'] = metric_get['resource/id']
+        del metric_get['resource/id']
+        metric_get['archive_policy_name'] = metric_get['archive_policy/name']
+        for k in list(metric_get):
+            if k.startswith("archive_policy/"):
+                del metric_get[k]
         self.assertEqual(metric, metric_get)
 
         # MEASURES ADD
@@ -250,9 +257,9 @@ class MetricClientTest(base.ClientTestBase):
         metrics = json.loads(result)
         metric_from_list = [p for p in metrics
                             if p['id'] == metric['id']][0]
-        for field in ["id", "archive_policy/name", "name"]:
-            # FIXME(sileht): add "resource_id" or "resource"
-            # when LP#1497171 is fixed
+        metric['archive_policy/name'] = metric['archive_policy_name']
+        for field in ("id", "archive_policy/name", "name",
+                      "unit", "resource_id"):
             self.assertEqual(metric[field], metric_from_list[field], field)
 
         # LIST + limit
@@ -302,7 +309,7 @@ class MetricClientTest(base.ClientTestBase):
         self.assertEqual("admin", metric['creator'])
         self.assertEqual(metric_name, metric["name"])
         self.assertEqual('some-unit', metric["unit"])
-        self.assertIsNotNone(metric["resource/id"])
+        self.assertIsNotNone(metric["resource_id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
 
         # CREATE FAIL
@@ -319,6 +326,11 @@ class MetricClientTest(base.ClientTestBase):
         result = self.gnocchi('metric',
                               params="show -r metric-res %s" % metric_name)
         metric_get = json.loads(result)
+        # `metric show` returns resource details, `metric create` does not
+        metric_get['resource_id'] = metric_get['resource/id']
+        for k in list(metric_get):
+            if k.startswith("resource/"):
+                del metric_get[k]
         self.assertEqual(metric, metric_get)
 
         # MEASURES ADD

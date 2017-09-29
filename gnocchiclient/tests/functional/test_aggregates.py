@@ -33,7 +33,7 @@ class AggregatesClientTest(base.ClientTestBase):
         self.assertEqual("admin", metric1["creator"])
         self.assertEqual('metric-name', metric1["name"])
         self.assertIsNone(metric1["unit"])
-        self.assertIsNotNone(metric1["resource/id"])
+        self.assertIsNotNone(metric1["resource_id"])
         self.assertIn("agg-fetch-test", metric1["archive_policy/name"])
 
         # CREATE ANOTHER METRIC
@@ -47,7 +47,7 @@ class AggregatesClientTest(base.ClientTestBase):
         self.assertEqual("admin", metric2["creator"])
         self.assertEqual('metric-name', metric2["name"])
         self.assertEqual('some-unit', metric2["unit"])
-        self.assertIsNotNone(metric2["resource/id"])
+        self.assertIsNotNone(metric2["resource_id"])
         self.assertIn("agg-fetch-test", metric2["archive_policy/name"])
 
         # MEASURES ADD
