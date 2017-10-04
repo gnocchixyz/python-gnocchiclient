@@ -13,7 +13,6 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
-.testrepository
 
 # Translations
 *.mo
@@ -28,3 +27,6 @@ ChangeLog
 # generated docs
 doc/source/api
 doc/source/gnocchi.rst
+
+# pytest cache
+.cache
