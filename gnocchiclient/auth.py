@@ -45,6 +45,9 @@ class GnocchiNoAuthPlugin(plugin.BaseAuthPlugin):
     def get_endpoint(self, session, **kwargs):
         return self._endpoint
 
+    def get_auth_ref(self, session, **kwargs):
+        return None
+
 
 class GnocchiOpt(loading.Opt):
     @property
@@ -98,6 +101,9 @@ class GnocchiBasicPlugin(plugin.BaseAuthPlugin):
 
     def get_endpoint(self, session, **kwargs):
         return self._endpoint
+
+    def get_auth_ref(self, session, **kwargs):
+        return None
 
 
 class GnocchiBasicLoader(loading.BaseLoader):

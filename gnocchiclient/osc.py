@@ -38,8 +38,10 @@ def make_client(instance):
     # NOTE(sileht): ensure setup of the session is done
     instance.setup_auth()
     return gnocchi_client(session=instance.session,
-                          interface=instance.interface,
-                          region_name=instance.region_name)
+                          adapter_options={
+                              'interface': instance.interface,
+                              'region_name': instance.region_name
+                          })
 
 
 def build_option_parser(parser):
