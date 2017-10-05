@@ -31,6 +31,16 @@ class ClientTestBase(testtools.TestCase):
         self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
         self.endpoint = os.environ.get('PIFPAF_GNOCCHI_HTTP_URL')
 
+    def openstack(self, action, flags='', params='',
+                  fail_ok=False, merge_stderr=False, input=None,
+                  has_output=True):
+        flags = ((("--os-auth-type gnocchi-basic "
+                   "--os-user admin "
+                   "--os-endpoint %s") % self.endpoint)
+                 + ' ' + flags)
+        return self._run("openstack", action, flags, params, fail_ok,
+                         merge_stderr, input, has_output)
+
     def gnocchi(self, action, flags='', params='',
                 fail_ok=False, merge_stderr=False, input=None,
                 has_output=True):
@@ -38,10 +48,16 @@ class ClientTestBase(testtools.TestCase):
                    "--user admin "
                    "--endpoint %s") % self.endpoint)
                  + ' ' + flags)
+        return self._run("gnocchi", action, flags, params, fail_ok,
+                         merge_stderr, input, has_output)
+
+    def _run(self, binary, action, flags='', params='',
+             fail_ok=False, merge_stderr=False, input=None,
+             has_output=True):
 
         fmt = '-f json' if has_output and action != 'help' else ""
 
-        cmd = ' '.join([os.path.join(self.cli_dir, "gnocchi"),
+        cmd = ' '.join([os.path.join(self.cli_dir, binary),
                         flags, action, params, fmt])
         if six.PY2:
             cmd = cmd.encode('utf-8')
