@@ -30,23 +30,32 @@ class GnocchiClient(object):
         self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
         self.endpoint = os.environ.get('PIFPAF_GNOCCHI_HTTP_URL')
 
+    def openstack(self, action, flags='', params='',
+                  fail_ok=False, merge_stderr=False, input=None):
+        flags = ((("--os-auth-type gnocchi-basic "
+                   "--os-user admin "
+                   "--os-endpoint %s") % self.endpoint)
+                 + ' ' + flags)
+        return self._run("openstack", action, flags, params, fail_ok,
+                         merge_stderr, input)
+
     def gnocchi(self, action, flags='', params='',
                 fail_ok=False, merge_stderr=False, input=None):
-        creds = ("--os-auth-plugin gnocchi-basic "
-                 "--user admin "
-                 "--endpoint %s") % self.endpoint
+        flags = ((("--os-auth-plugin gnocchi-basic "
+                   "--user admin "
+                   "--endpoint %s") % self.endpoint)
+                 + ' ' + flags)
+        return self._run("gnocchi", action, flags, params, fail_ok,
+                         merge_stderr, input)
 
-        flags = creds + ' ' + flags
+    def _run(self, binary, action, flags='', params='',
+             fail_ok=False, merge_stderr=False, input=None):
 
         # FIXME(sileht): base.execute is broken in py3 in tempest-lib
         # see: https://review.openstack.org/#/c/218870/
         # return base.execute("gnocchi", action, flags, params, fail_ok,
-        #                      merge_stderr, self.cli_dir)
 
-        cmd = "gnocchi"
-
-        # from fixed tempestlib
-        cmd = ' '.join([os.path.join(self.cli_dir, cmd),
+        cmd = ' '.join([os.path.join(self.cli_dir, binary),
                         flags, action, params])
         if six.PY2:
             cmd = cmd.encode('utf-8')
@@ -87,6 +96,9 @@ class ClientTestBase(base.ClientTestBase):
                 time.sleep(1)
                 retry -= 1
         return result
+
+    def openstack(self, *args, **kwargs):
+        return self.clients.openstack(*args, **kwargs)
 
     def gnocchi(self, *args, **kwargs):
         return self.clients.gnocchi(*args, **kwargs)
