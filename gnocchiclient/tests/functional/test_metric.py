@@ -14,6 +14,8 @@ import os
 import tempfile
 import uuid
 
+from gnocchiclient import auth
+from gnocchiclient import client
 from gnocchiclient.tests.functional import base
 
 
@@ -48,6 +50,29 @@ class MetricClientTest(base.ClientTestBase):
                               fail_ok=True, merge_stderr=True)
         self.assertEqual("Metric %s does not exist (HTTP 404)\n" %
                          metric2["id"], result)
+
+    def test_metric_listing(self):
+        apname = str(uuid.uuid4())
+        # PREPARE AN ARCHIVE POLICY
+        self.gnocchi("archive-policy", params="create "
+                     "-d granularity:1s,points:86400 %s" % apname)
+        # Create 1005 metrics
+        c = client.Client(
+            1,
+            session_options={
+                'auth': auth.GnocchiBasicPlugin(
+                    user="admin", endpoint=self.endpoint)
+            },
+        )
+        for i in range(1005):
+            c.metric.create({"archive_policy_name": apname})
+
+        result = self.gnocchi(u'metric', params=u"list")
+        self.assertGreaterEqual(len(json.loads(result)), 1005)
+
+        result = self.gnocchi(u'metric', params=u"list"
+                              u" --limit 2")
+        self.assertEqual(2, len(json.loads(result)))
 
     def test_metric_scenario(self):
         # PREPARE AN ARCHIVE POLICY
