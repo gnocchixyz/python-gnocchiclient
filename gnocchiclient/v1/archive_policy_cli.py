@@ -54,6 +54,8 @@ def archive_policy_definition(string):
     defs = {}
     for part in parts:
         attr, __, value = part.partition(":")
+        attr.strip()
+        value.strip()
         if (attr not in ['granularity', 'points', 'timespan']
                 or value is None):
             raise ValueError
