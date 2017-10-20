@@ -88,7 +88,7 @@ class MalformedQuery(Exception):
             "Malformed Query: %s" % reason)
 
 
-def add_query_argument(cmd, parser):
+def add_query_argument(cmd, parser, *args, **kwargs):
     return parser.add_argument(
         cmd,
         help=u"A query to filter resource. "
@@ -99,7 +99,7 @@ def add_query_argument(cmd, parser):
         u"Use \"\" to force data to be interpreted as string. "
         u"Supported operators are: not, and, ∧ or, ∨, >=, <=, !=, >, <, =, "
         u"==, eq, ne, lt, gt, ge, le, in, like, ≠, ≥, ≤, like, in.",
-        type=search_query_builder)
+        type=search_query_builder, *args, **kwargs)
 
 
 def search_query_builder(query):

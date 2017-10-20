@@ -27,6 +27,7 @@ from keystoneauth1 import loading
 from gnocchiclient import auth
 from gnocchiclient import benchmark
 from gnocchiclient import client
+from gnocchiclient.v1 import aggregates_cli
 from gnocchiclient.v1 import archive_policy_cli
 from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
 from gnocchiclient.v1 import capabilities_cli
@@ -73,6 +74,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "measures batch-resources-metrics":
             metric_cli.CliResourcesMetricsMeasuresBatch,
         "measures aggregation": metric_cli.CliMeasuresAggregation,
+        "aggregates": aggregates_cli.CliAggregates,
         "capabilities list": capabilities_cli.CliCapabilitiesList,
         "benchmark metric create": benchmark.CliBenchmarkMetricCreate,
         "benchmark metric show": benchmark.CliBenchmarkMetricShow,

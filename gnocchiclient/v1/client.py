@@ -16,6 +16,7 @@
 import keystoneauth1.session
 
 from gnocchiclient import client
+from gnocchiclient.v1 import aggregates
 from gnocchiclient.v1 import archive_policy
 from gnocchiclient.v1 import archive_policy_rule
 from gnocchiclient.v1 import capabilities
@@ -59,5 +60,6 @@ class Client(object):
         self.archive_policy_rule = (
             archive_policy_rule.ArchivePolicyRuleManager(self))
         self.metric = metric.MetricManager(self)
+        self.aggregates = aggregates.AggregatesManager(self)
         self.capabilities = capabilities.CapabilitiesManager(self)
         self.status = status.StatusManager(self)
