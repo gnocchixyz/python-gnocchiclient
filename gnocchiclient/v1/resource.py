@@ -126,10 +126,14 @@ class ResourceManager(base.Manager):
         :param resource_type: Type of the resource
         :type resource_type: str
         """
+        if isinstance(query, dict):
+            return self._delete(
+                self.url + resource_type + "/",
+                headers={'Content-Type': "application/json"},
+                data=ujson.dumps(query)).json()
         return self._delete(
-            self.url+resource_type + "/",
-            headers={'Content-Type': "application/json"},
-            data=ujson.dumps(query)).json()
+            self.url + resource_type + "/?filter=" + query,
+            headers={'Content-Type': "application/json"}).json()
 
     def search(self, resource_type="generic", query=None, details=False,
                history=False, limit=None, marker=None, sorts=None):
@@ -154,14 +158,21 @@ class ResourceManager(base.Manager):
 
         See Gnocchi REST API documentation for the format
         of *query dictionary*
-        http://docs.openstack.org/developer/gnocchi/rest.html#searching-for-resources
+        http://gnocchi.xyz/rest.html#searching-for-resources
         """
 
         query = query or {}
         params = utils.build_pagination_options(
             details, history, limit, marker, sorts)
-        url = "v1/search/resource/%s?%s" % (resource_type,
-                                            utils.dict_to_querystring(params))
+        url = "v1/search/resource/%s?%%s" % resource_type
+
+        if isinstance(query, dict):
+            return self._post(
+                url % utils.dict_to_querystring(params),
+                headers={'Content-Type': "application/json"},
+                data=ujson.dumps(query)).json()
+
+        params['filter'] = query
         return self._post(
-            url, headers={'Content-Type': "application/json"},
-            data=ujson.dumps(query)).json()
+            url % utils.dict_to_querystring(params),
+            headers={'Content-Type': "application/json"}).json()
