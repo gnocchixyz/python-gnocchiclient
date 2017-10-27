@@ -39,10 +39,11 @@ class MetricManager(base.Manager):
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
         """
-        qs = utils.build_pagination_options(False, False, limit, marker,
-                                            sorts)
+        params = utils.build_pagination_options(False, False, limit, marker,
+                                                sorts)
         metrics = []
-        page_url = "%s?%s" % (self.metric_url[:-1], qs)
+        page_url = "%s?%s" % (self.metric_url[:-1],
+                              utils.dict_to_querystring(params))
         while page_url:
             page = self._get(page_url)
             metrics.extend(page.json())

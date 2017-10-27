@@ -39,9 +39,10 @@ class ResourceManager(base.Manager):
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
         """
-        qs = utils.build_pagination_options(details, history, limit, marker,
-                                            sorts)
-        url = "%s%s?%s" % (self.url, resource_type, qs)
+        params = utils.build_pagination_options(
+            details, history, limit, marker, sorts)
+        url = "%s%s?%s" % (self.url, resource_type,
+                           utils.dict_to_querystring(params))
         return self._get(url).json()
 
     def get(self, resource_type, resource_id, history=False):
@@ -77,9 +78,10 @@ class ResourceManager(base.Manager):
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
         """
-        qs = utils.build_pagination_options(details, False, limit, marker,
-                                            sorts)
-        url = "%s%s/%s/history?%s" % (self.url, resource_type, resource_id, qs)
+        params = utils.build_pagination_options(details, False, limit, marker,
+                                                sorts)
+        url = "%s%s/%s/history?%s" % (self.url, resource_type, resource_id,
+                                      utils.dict_to_querystring(params))
         return self._get(url).json()
 
     def create(self, resource_type, resource):
@@ -156,9 +158,10 @@ class ResourceManager(base.Manager):
         """
 
         query = query or {}
-        qs = utils.build_pagination_options(details, history, limit, marker,
-                                            sorts)
-        url = "v1/search/resource/%s?%s" % (resource_type, qs)
+        params = utils.build_pagination_options(
+            details, history, limit, marker, sorts)
+        url = "v1/search/resource/%s?%s" % (resource_type,
+                                            utils.dict_to_querystring(params))
         return self._post(
             url, headers={'Content-Type': "application/json"},
             data=ujson.dumps(query)).json()

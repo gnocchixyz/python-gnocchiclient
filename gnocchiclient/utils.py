@@ -201,18 +201,18 @@ def get_pagination_options(parsed_args):
 
 def build_pagination_options(details=False, history=False,
                              limit=None, marker=None, sorts=None):
-    options = []
+    options = {}
     if details:
-        options.append("details=true")
+        options["details"] = "true"
     if history:
-        options.append("history=true")
+        options["history"] = "true"
     if limit:
-        options.append("limit=%d" % limit)
+        options["limit"] = int(limit)
     if marker:
-        options.append("marker=%s" % urllib_parse.quote(marker))
-    for sort in sorts or []:
-        options.append("sort=%s" % urllib_parse.quote(sort))
-    return "%s" % "&".join(options)
+        options["marker"] = marker
+    if sorts:
+        options["sort"] = sorts
+    return options
 
 
 def get_client(obj):
