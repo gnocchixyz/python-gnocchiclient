@@ -118,6 +118,14 @@ class GnocchiShell(app.App):
             default=os.environ.get('GNOCCHI_API_VERSION', '1'),
             help='Defaults to env[GNOCCHI_API_VERSION] or 1.')
 
+        # NOTE(jd) This is a workaroun for people using Keystone auth with the
+        # CLI. A lot of rc files do not export OS_AUTH_TYPE=password and
+        # assumes it is the default. It's not in that case, but since we can't
+        # fix all the rc files of the world, workaround it here.
+        if ("OS_AUTH_PASSWORD" in os.environ and
+           "OS_AUTH_TYPE" not in os.environ):
+            os.environ.set("OS_AUTH_TYPE", "password")
+
         loading.register_session_argparse_arguments(parser=parser)
         plugin = loading.register_auth_argparse_arguments(
             parser=parser, argv=sys.argv, default="gnocchi-basic")
