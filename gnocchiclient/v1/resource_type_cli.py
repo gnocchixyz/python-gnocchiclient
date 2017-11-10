@@ -14,13 +14,12 @@
 import distutils.util
 
 from cliff import command
-from cliff import lister
 from cliff import show
 
 from gnocchiclient import utils
 
 
-class CliResourceTypeList(lister.Lister):
+class CliResourceTypeList(utils.Lister):
     """List resource types"""
 
     COLS = ('name', 'attributes')

@@ -12,13 +12,12 @@
 #    under the License.
 
 from cliff import command
-from cliff import lister
 from cliff import show
 
 from gnocchiclient import utils
 
 
-class CliArchivePolicyRuleList(lister.Lister):
+class CliArchivePolicyRuleList(utils.Lister):
     """List archive policy rules"""
 
     COLS = ('name', 'archive_policy_name', 'metric_pattern')

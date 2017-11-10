@@ -16,7 +16,6 @@ import logging
 import sys
 
 from cliff import command
-from cliff import lister
 from cliff import show
 
 from gnocchiclient import utils
@@ -33,7 +32,7 @@ class CliMetricWithResourceID(command.Command):
         return parser
 
 
-class CliMetricList(lister.Lister):
+class CliMetricList(utils.Lister):
     """List metrics"""
 
     COLS = ('id', 'archive_policy/name', 'name', 'unit', 'resource_id')
@@ -169,7 +168,7 @@ class DeprecatedCliMetricDelete(CliMetricDelete):
         return super(DeprecatedCliMetricDelete, self).take_action(parsed_args)
 
 
-class CliMeasuresReturn(lister.Lister):
+class CliMeasuresReturn(utils.Lister):
     def get_parser(self, prog_name):
         parser = super(CliMeasuresReturn, self).get_parser(prog_name)
         parser.add_argument("--utc", help="Return timestamps as UTC",
@@ -186,8 +185,7 @@ class CliMeasuresReturn(lister.Lister):
         return [(t(dt).isoformat(), g, v) for dt, g, v in measures]
 
 
-class CliMeasuresShow(CliMetricWithResourceID, CliMeasuresReturn,
-                      lister.Lister):
+class CliMeasuresShow(CliMetricWithResourceID, CliMeasuresReturn):
     """Get measurements of a metric"""
 
     COLS = ('timestamp', 'granularity', 'value')
