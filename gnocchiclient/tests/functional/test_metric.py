@@ -295,17 +295,18 @@ class MetricClientTest(base.ClientTestBase):
                      "--back-window 0 -d granularity:1s,points:86400")
         self.gnocchi("resource", params="create metric-res")
 
+        metric_name = str(uuid.uuid4())
         # CREATE
         result = self.gnocchi(
             u'metric', params=u"create"
-            u" --archive-policy-name metric-test2 -r metric-res metric-name"
-            u" --unit some-unit")
+            u" --archive-policy-name metric-test2 -r metric-res %s"
+            u" --unit some-unit" % metric_name)
         metric = json.loads(result)
         self.assertIsNotNone(metric["id"])
         self.assertEqual("", metric['created_by_project_id'])
         self.assertEqual("admin", metric['created_by_user_id'])
         self.assertEqual("admin", metric['creator'])
-        self.assertEqual('metric-name', metric["name"])
+        self.assertEqual(metric_name, metric["name"])
         self.assertEqual('some-unit', metric["unit"])
         self.assertIsNotNone(metric["resource/id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
@@ -313,21 +314,22 @@ class MetricClientTest(base.ClientTestBase):
         # CREATE FAIL
         result = self.gnocchi(
             u'metric', params=u"create"
-            u" --archive-policy-name metric-test2 -r metric-res metric-name",
+            u" --archive-policy-name metric-test2 "
+            "-r metric-res %s" % metric_name,
             fail_ok=True, merge_stderr=True)
         self.assertEqual(
-            "Named metric metric-name already exists (HTTP 409)\n",
+            "Named metric %s already exists (HTTP 409)\n" % metric_name,
             result)
 
         # GET
         result = self.gnocchi('metric',
-                              params="show -r metric-res metric-name")
+                              params="show -r metric-res %s" % metric_name)
         metric_get = json.loads(result)
         self.assertEqual(metric, metric_get)
 
         # MEASURES ADD
         self.gnocchi('measures',
-                     params=("add metric-name -r metric-res "
+                     params=("add " + metric_name + " -r metric-res "
                              "-m '2015-03-06T14:33:57Z@43.11' "
                              "--measure '2015-03-06T14:34:12Z@12'"),
                      has_output=False)
@@ -337,7 +339,7 @@ class MetricClientTest(base.ClientTestBase):
             'measures', params=("aggregation "
                                 "--query \"id='metric-res'\" "
                                 "--resource-type \"generic\" "
-                                "-m metric-name "
+                                "-m " + metric_name + " "
                                 "--aggregation mean "
                                 "--needed-overlap 0 "
                                 "--start 2015-03-06T14:32:00Z "
@@ -360,7 +362,7 @@ class MetricClientTest(base.ClientTestBase):
             'measures', params=("aggregation "
                                 "--query \"id='metric-res'\" "
                                 "--resource-type \"generic\" "
-                                "-m metric-name "
+                                "-m  " + metric_name + " "
                                 "--aggregation mean "
                                 "--needed-overlap 0 "
                                 "--start 2015-03-06T14:32:00Z "
@@ -382,7 +384,8 @@ class MetricClientTest(base.ClientTestBase):
             'measures', params=("aggregation "
                                 "--query \"id='metric-res'\" "
                                 "--resource-type \"generic\" "
-                                "-m metric-name --fill 0 "
+                                "-m  " + metric_name + " "
+                                "--fill 0 "
                                 "--granularity 1 "
                                 "--start 2015-03-06T14:32:00Z "
                                 "--stop 2015-03-06T14:36:00Z"))
@@ -403,7 +406,8 @@ class MetricClientTest(base.ClientTestBase):
             'measures', params=("aggregation "
                                 "--query \"id='metric-res'\" "
                                 "--resource-type \"generic\" "
-                                "-m metric-name --granularity 1 "
+                                "-m  " + metric_name + " "
+                                "--granularity 1 "
                                 "--aggregation mean --resample=3600 "
                                 "--needed-overlap 0 "
                                 "--start 2015-03-06T14:32:00Z "
@@ -423,7 +427,7 @@ class MetricClientTest(base.ClientTestBase):
                                 "--groupby user_id "
                                 "--query \"id='metric-res'\" "
                                 "--resource-type \"generic\" "
-                                "-m metric-name "
+                                "-m  " + metric_name + " "
                                 "--aggregation mean "
                                 "--needed-overlap 0 "
                                 "--start 2015-03-06T14:32:00Z "
@@ -444,7 +448,7 @@ class MetricClientTest(base.ClientTestBase):
 
         # MEASURES GET
         result = self.gnocchi('measures',
-                              params=("show metric-name -r metric-res "
+                              params=("show " + metric_name + " -r metric-res "
                                       "--aggregation mean "
                                       "--start 2015-03-06T14:32:00Z "
                                       "--stop 2015-03-06T14:36:00Z"))
@@ -462,7 +466,7 @@ class MetricClientTest(base.ClientTestBase):
         ], measures)
 
         # BATCHING
-        measures = json.dumps({'metric-res': {'metric-name': [{
+        measures = json.dumps({'metric-res': {metric_name: [{
             'timestamp': '2015-03-06T14:34:12', 'value': 12
         }]}})
         tmpfile = tempfile.NamedTemporaryFile(delete=False)
@@ -497,23 +501,23 @@ class MetricClientTest(base.ClientTestBase):
 
         # DELETE
         self.gnocchi('metric',
-                     params="delete -r metric-res metric-name",
+                     params="delete -r metric-res " + metric_name,
                      has_output=False)
 
         # GET FAIL
         result = self.gnocchi('metric',
-                              params="show -r metric-res metric-name",
+                              params="show -r metric-res " + metric_name,
                               fail_ok=True, merge_stderr=True)
         self.assertEqual(
-            "Metric metric-name does not exist (HTTP 404)\n", result)
+            "Metric " + metric_name + " does not exist (HTTP 404)\n", result)
 
         # DELETE FAIL
         result = self.gnocchi('metric',
-                              params="delete -r metric-res metric-name",
+                              params="delete -r metric-res " + metric_name,
                               fail_ok=True, merge_stderr=True,
                               has_output=False)
         self.assertEqual(
-            "Metric metric-name does not exist (HTTP 404)\n",
+            "Metric " + metric_name + " does not exist (HTTP 404)\n",
             result)
 
         # GET RESOURCE ID
@@ -527,7 +531,7 @@ class MetricClientTest(base.ClientTestBase):
 
         # GET FAIL WITH RESOURCE ERROR
         result = self.gnocchi('metric',
-                              params="show metric-name -r metric-res",
+                              params="show " + metric_name + " -r metric-res",
                               fail_ok=True, merge_stderr=True)
         self.assertEqual(
             "Resource %s does not exist (HTTP 404)\n" % resource_id,

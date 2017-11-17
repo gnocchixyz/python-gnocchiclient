@@ -271,13 +271,20 @@ class MetricManager(base.Manager):
             measures = self._get("v1/aggregation/metric",
                                  params=params).json()
         else:
-            measures = self._post(
-                "v1/aggregation/resource/%s/metric/%s?%s" % (
-                    resource_type, metrics,
-                    utils.dict_to_querystring(params)),
-                headers={'Content-Type': "application/json"},
-                data=ujson.dumps(query)).json()
-
+            if isinstance(query, dict):
+                measures = self._post(
+                    "v1/aggregation/resource/%s/metric/%s?%s" % (
+                        resource_type, metrics,
+                        utils.dict_to_querystring(params)),
+                    headers={'Content-Type': "application/json"},
+                    data=ujson.dumps(query)).json()
+            else:
+                params['filter'] = query
+                measures = self._post(
+                    "v1/aggregation/resource/%s/metric/%s?%s" % (
+                        resource_type, metrics,
+                        utils.dict_to_querystring(params)),
+                    headers={'Content-Type': "application/json"}).json()
         if groupby is None:
             return [(iso8601.parse_date(ts), g, value)
                     for ts, g, value in measures]

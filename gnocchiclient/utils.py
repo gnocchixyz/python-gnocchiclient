@@ -13,80 +13,8 @@
 #    under the License.
 from dateutil import tz
 import iso8601
-import pyparsing as pp
 import six
 from six.moves.urllib import parse as urllib_parse
-
-uninary_operators = ("not", )
-binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==", u"eq", u"ne",
-                   u"lt", u"gt", u"ge", u"le", u"in", u"like", u"≠", u"≥",
-                   u"≤")
-multiple_operators = (u"and", u"or", u"∧", u"∨")
-
-operator = pp.Regex(u"|".join(binary_operator))
-null = pp.Regex("None|none|null").setParseAction(pp.replaceWith(None))
-boolean = "False|True|false|true"
-boolean = pp.Regex(boolean).setParseAction(lambda t: t[0].lower() == "true")
-hex_string = lambda n: pp.Word(pp.hexnums, exact=n)
-uuid_string = pp.Combine(hex_string(8) +
-                         (pp.Optional("-") + hex_string(4)) * 3 +
-                         pp.Optional("-") + hex_string(12))
-number = r"[+-]?\d+(:?\.\d*)?(:?[eE][+-]?\d+)?"
-number = pp.Regex(number).setParseAction(lambda t: float(t[0]))
-identifier = pp.Word(pp.alphas, pp.alphanums + "_")
-quoted_string = pp.QuotedString('"') | pp.QuotedString("'")
-comparison_term = pp.Forward()
-in_list = pp.Group(pp.Suppress('[') +
-                   pp.Optional(pp.delimitedList(comparison_term)) +
-                   pp.Suppress(']'))("list")
-comparison_term << (null | boolean | uuid_string | identifier | number |
-                    quoted_string | in_list)
-condition = pp.Group(comparison_term + operator + comparison_term)
-
-expr = pp.infixNotation(condition, [
-    ("not", 1, pp.opAssoc.RIGHT, ),
-    ("and", 2, pp.opAssoc.LEFT, ),
-    ("∧", 2, pp.opAssoc.LEFT, ),
-    ("or", 2, pp.opAssoc.LEFT, ),
-    ("∨", 2, pp.opAssoc.LEFT, ),
-])
-
-
-def _parsed_query2dict(parsed_query):
-    result = None
-    while parsed_query:
-        part = parsed_query.pop()
-        if part in binary_operator:
-            result = {part: {parsed_query.pop(): result}}
-
-        elif part in multiple_operators:
-            if result.get(part):
-                result[part].append(
-                    _parsed_query2dict(parsed_query.pop()))
-            else:
-                result = {part: [result]}
-
-        elif part in uninary_operators:
-            result = {part: result}
-        elif isinstance(part, pp.ParseResults):
-            kind = part.getName()
-            if kind == "list":
-                res = part.asList()
-            else:
-                res = _parsed_query2dict(part)
-            if result is None:
-                result = res
-            elif isinstance(result, dict):
-                list(result.values())[0].append(res)
-        else:
-            result = part
-    return result
-
-
-class MalformedQuery(Exception):
-    def __init__(self, reason):
-        super(MalformedQuery, self).__init__(
-            "Malformed Query: %s" % reason)
 
 
 def add_query_argument(cmd, parser, *args, **kwargs):
@@ -100,15 +28,7 @@ def add_query_argument(cmd, parser, *args, **kwargs):
         u"Use \"\" to force data to be interpreted as string. "
         u"Supported operators are: not, and, ∧ or, ∨, >=, <=, !=, >, <, =, "
         u"==, eq, ne, lt, gt, ge, le, in, like, ≠, ≥, ≤, like, in.",
-        type=search_query_builder, *args, **kwargs)
-
-
-def search_query_builder(query):
-    try:
-        parsed_query = expr.parseString(query, parseAll=True)[0]
-    except pp.ParseException as e:
-        raise MalformedQuery(six.text_type(e))
-    return _parsed_query2dict(parsed_query)
+        *args, **kwargs)
 
 
 def list2cols(cols, objs):
