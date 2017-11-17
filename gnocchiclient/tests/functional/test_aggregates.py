@@ -20,8 +20,8 @@ class AggregatesClientTest(base.ClientTestBase):
         self.gnocchi("archive-policy", params="create agg-fetch-test "
                      "--back-window 0 -d granularity:1s,points:86400")
 
-        self.gnocchi("resource", params="create metric-res1")
-        self.gnocchi("resource", params="create metric-res2")
+        r1 = json.loads(self.gnocchi("resource", params="create metric-res1"))
+        r2 = json.loads(self.gnocchi("resource", params="create metric-res2"))
 
         # CREATE A METRIC
         result = self.gnocchi(
@@ -57,13 +57,13 @@ class AggregatesClientTest(base.ClientTestBase):
         # MEASURES ADD
         self.gnocchi('measures',
                      params=("add %s "
-                             "-m '2015-03-06T14:33:57@43.11' "
-                             "--measure '2015-03-06T14:34:12@12' ")
+                             "-m '2015-03-06T14:33:57Z@43.11' "
+                             "--measure '2015-03-06T14:34:12Z@12' ")
                      % metric1["id"], has_output=False)
         self.gnocchi('measures',
                      params=("add %s "
-                             "-m '2015-03-06T14:33:57@43.11' "
-                             "--measure '2015-03-06T14:34:12@12' ")
+                             "-m '2015-03-06T14:33:57Z@43.11' "
+                             "--measure '2015-03-06T14:34:12Z@12' ")
                      % metric2["id"], has_output=False)
 
         # MEASURES GET with refresh
@@ -86,19 +86,19 @@ class AggregatesClientTest(base.ClientTestBase):
         measures = json.loads(result)
         self.assertEqual(4, len(measures))
         self.assertIn({'granularity': 1.0,
-                       'name': '%s_mean' % metric1["id"],
+                       'name': '%s/mean' % metric1["id"],
                        'timestamp': '2015-03-06T14:33:57+00:00',
                        'value': 45.11}, measures)
         self.assertIn({'granularity': 1.0,
-                       'name': '%s_mean' % metric1["id"],
+                       'name': '%s/mean' % metric1["id"],
                        'timestamp': '2015-03-06T14:34:12+00:00',
                        'value': 14.0}, measures)
         self.assertIn({'granularity': 1.0,
-                       'name': '%s_mean' % metric2["id"],
+                       'name': '%s/mean' % metric2["id"],
                        'timestamp': '2015-03-06T14:33:57+00:00',
                        'value': 45.11}, measures)
         self.assertIn({'granularity': 1.0,
-                       'name': '%s_mean' % metric2["id"],
+                       'name': '%s/mean' % metric2["id"],
                        'timestamp': '2015-03-06T14:34:12+00:00',
                        'value': 14.0}, measures)
 
@@ -118,21 +118,21 @@ class AggregatesClientTest(base.ClientTestBase):
         self.assertEqual(4, len(measures))
         self.assertIn({'granularity': 1.0,
                        'group': u'project_id: None, user_id: None',
-                       'name': u'metric-name_mean',
+                       'name': u'%s/metric-name/mean' % r1["id"],
                        'timestamp': u'2015-03-06T14:33:57+00:00',
                        'value': 45.11}, measures)
         self.assertIn({'granularity': 1.0,
                        'group': u'project_id: None, user_id: None',
-                       'name': u'metric-name_mean',
+                       'name': u'%s/metric-name/mean' % r1["id"],
                        'timestamp': u'2015-03-06T14:34:12+00:00',
                        'value': 14.0}, measures)
         self.assertIn({'granularity': 1.0,
                        'group': u'project_id: None, user_id: None',
-                       'name': u'metric-name_mean',
+                       'name': u'%s/metric-name/mean' % r2["id"],
                        'timestamp': u'2015-03-06T14:33:57+00:00',
                        'value': 45.11}, measures)
         self.assertIn({'granularity': 1.0,
                        'group': u'project_id: None, user_id: None',
-                       'name': u'metric-name_mean',
+                       'name': u'%s/metric-name/mean' % r2["id"],
                        'timestamp': u'2015-03-06T14:34:12+00:00',
                        'value': 14.0}, measures)
