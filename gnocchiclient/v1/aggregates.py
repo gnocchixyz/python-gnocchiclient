@@ -23,7 +23,7 @@ from gnocchiclient.v1 import base
 class AggregatesManager(base.Manager):
     def fetch(self, operations, search=None,
               resource_type='generic', start=None, stop=None, granularity=None,
-              needed_overlap=None, groupby=None, fill=None):
+              needed_overlap=None, groupby=None, fill=None, details=False):
         """Get measurements of an aggregated metrics
 
         :param operations: operations
@@ -40,6 +40,9 @@ class AggregatesManager(base.Manager):
         :type groupby: list
         :param fill: value to use when backfilling missing datapoints
         :type fill: float or 'null'
+        :param details: also returns the list of metrics or resources
+                        associated to the operations
+        :type details: boolean
 
         See Gnocchi REST API documentation for the format
         of *query dictionary*
@@ -54,7 +57,8 @@ class AggregatesManager(base.Manager):
         params = dict(start=start, stop=stop,
                       granularity=granularity,
                       needed_overlap=needed_overlap,
-                      fill=fill)
+                      fill=fill,
+                      details=details)
 
         data = dict(operations=operations)
         if search is not None:
@@ -67,14 +71,25 @@ class AggregatesManager(base.Manager):
             headers={'Content-Type': "application/json"},
             data=ujson.dumps(data)).json()
 
-        if groupby is None:
-            for name in aggregates:
-                aggregates[name] = [(iso8601.parse_date(ts), g, value)
-                                    for ts, g, value in aggregates[name]]
-        else:
+        if search is not None and groupby is not None:
             for group in aggregates:
-                for name in group["measures"]:
-                    group["measures"][name] = [
-                        (iso8601.parse_date(ts), g, value)
-                        for ts, g, value in group["measures"][name]]
+                self._convert_dates(group["measures"]["measures"])
+        else:
+            self._convert_dates(aggregates["measures"])
         return aggregates
+
+    @classmethod
+    def _convert_dates(cls, data):
+        # NOTE(sileht): browse to aggregates measures dict tree and convert
+        # date when we found timeseries, dict can looks like
+        # {"aggregated": ...}, {"metric_id": {"agg": ...}} or
+        # {"resource_id": {"metric_name": {"agg": ...}}}
+        for key in data:
+            if isinstance(data[key], list):
+                data[key] = [(iso8601.parse_date(ts), g, value)
+                             for ts, g, value in data[key]]
+            elif isinstance(data[key], dict):
+                cls._convert_dates(data[key])
+            else:
+                raise RuntimeError("Unexpected aggregates API output %s" %
+                                   data[key])

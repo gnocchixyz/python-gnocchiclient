@@ -56,15 +56,26 @@ class CliAggregates(lister.Lister):
             needed_overlap=parsed_args.needed_overlap,
             groupby=parsed_args.groupby,
         )
-        if parsed_args.groupby:
+
+        if parsed_args.search and parsed_args.groupby:
             ms = []
             for g in aggregates:
                 group_name = ", ".join("%s: %s" % (k, g['group'][k])
                                        for k in sorted(g['group']))
-                for name in g['measures']:
-                    for ts, g, value in g['measures'][name]:
-                        ms.append((group_name, name, ts.isoformat(), g, value))
+                for row in self.flatten_measures(g["measures"]["measures"]):
+                    ms.append((group_name, ) + row)
             return ('group',) + self.COLS, ms
-        return self.COLS, [(name, ts.isoformat(), g, value)
-                           for name, measures in aggregates.items()
-                           for ts, g, value in measures]
+        return self.COLS, list(self.flatten_measures(aggregates["measures"]))
+
+    @classmethod
+    def flatten_measures(cls, data, labels=None):
+        if labels is None:
+            labels = tuple()
+        for key in data:
+            if isinstance(data[key], list):
+                name = "/".join(labels + (key, ))
+                for ts, g, value in data[key]:
+                    yield (name, ts.isoformat(), g, value)
+            else:
+                for row in cls.flatten_measures(data[key], labels + (key,)):
+                    yield row
