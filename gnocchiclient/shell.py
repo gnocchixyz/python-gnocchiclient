@@ -30,6 +30,7 @@ from gnocchiclient import client
 from gnocchiclient.v1 import aggregates_cli
 from gnocchiclient.v1 import archive_policy_cli
 from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
+from gnocchiclient.v1 import build_cli
 from gnocchiclient.v1 import capabilities_cli
 from gnocchiclient.v1 import metric_cli
 from gnocchiclient.v1 import resource_cli
@@ -41,6 +42,7 @@ from gnocchiclient.version import __version__
 class GnocchiCommandManager(commandmanager.CommandManager):
     SHELL_COMMANDS = {
         "status": status_cli.CliStatusShow,
+        "server version": build_cli.CliBuildShow,
         "resource list": resource_cli.CliResourceList,
         "resource show": resource_cli.CliResourceShow,
         "resource history": resource_cli.CliResourceHistory,
@@ -94,7 +96,7 @@ class GnocchiShell(app.App):
             version=__version__,
             command_manager=GnocchiCommandManager(None),
             deferred_help=True,
-            )
+        )
 
         self._client = None
 
