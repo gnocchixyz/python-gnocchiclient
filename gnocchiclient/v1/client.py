@@ -19,6 +19,7 @@ from gnocchiclient import client
 from gnocchiclient.v1 import aggregates
 from gnocchiclient.v1 import archive_policy
 from gnocchiclient.v1 import archive_policy_rule
+from gnocchiclient.v1 import build
 from gnocchiclient.v1 import capabilities
 from gnocchiclient.v1 import metric
 from gnocchiclient.v1 import resource
@@ -63,3 +64,4 @@ class Client(object):
         self.aggregates = aggregates.AggregatesManager(self)
         self.capabilities = capabilities.CapabilitiesManager(self)
         self.status = status.StatusManager(self)
+        self.build = build.BuildManager(self)
