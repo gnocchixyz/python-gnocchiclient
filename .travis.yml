@@ -14,9 +14,15 @@ env:
   - TARGET: docs-gnocchi.xyz
 
 before_script:
-  - docker pull gnocchixyz/ci-tools:latest
+  # Only run if this is a pull-request
+  - if \[ "$TRAVIS_PULL_REQUEST" != "false" -o  -n "$TRAVIS_TAG" \]; then
+      docker pull gnocchixyz/ci-tools:latest ;
+    fi
 script:
-  - docker run -v ~/.cache/pip:/home/tester/.cache/pip -v $(pwd):/home/tester/src gnocchixyz/ci-tools:latest tox -e ${TARGET}
+  # Only run if this is a pull-request
+  - if \[ "$TRAVIS_PULL_REQUEST" != "false" -o  -n "$TRAVIS_TAG" \]; then
+      docker run -v ~/.cache/pip:/home/tester/.cache/pip -v $(pwd):/home/tester/src gnocchixyz/ci-tools:latest tox -e ${TARGET} ;
+    fi
 
 notifications:
   email: false
