@@ -202,8 +202,8 @@ class MetricClientTest(base.ClientTestBase):
             5, 'measures', params=("show %s "
                                    "--aggregation mean "
                                    "--granularity 1 --resample 3600 "
-                                   "--start 2015-03-06T14:32:00 "
-                                   "--stop 2015-03-06T14:36:00"
+                                   "--start 2015-03-06T14:32:00Z "
+                                   "--stop 2015-03-06T14:36:00Z"
                                    ) % metric["id"])
         measures = json.loads(result)
         self.assertEqual([
