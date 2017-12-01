@@ -11,6 +11,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from cliff import lister
 from dateutil import tz
 import iso8601
 import six
@@ -162,3 +163,11 @@ def parse_date(s):
 
 def dt_to_localtz(d):
     return d.astimezone(LOCAL_TIMEZONE)
+
+
+class Lister(lister.Lister):
+    """Cliff lister that uses yaml by default."""
+
+    @property
+    def formatter_default(self):
+        return 'yaml'

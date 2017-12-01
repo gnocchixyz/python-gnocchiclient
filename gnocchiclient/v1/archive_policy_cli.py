@@ -12,13 +12,12 @@
 #    under the License.
 
 from cliff import command
-from cliff import lister
 from cliff import show
 
 from gnocchiclient import utils
 
 
-class CliArchivePolicyList(lister.Lister):
+class CliArchivePolicyList(utils.Lister):
     """List archive policies"""
 
     COLS = ('name',
@@ -26,9 +25,6 @@ class CliArchivePolicyList(lister.Lister):
 
     def take_action(self, parsed_args):
         policies = utils.get_client(self).archive_policy.list()
-        if parsed_args.formatter == 'table':
-            for ap in policies:
-                utils.format_archive_policy(ap)
         return utils.list2cols(self.COLS, policies)
 
 
