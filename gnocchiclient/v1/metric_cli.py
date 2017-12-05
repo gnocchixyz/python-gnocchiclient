@@ -82,8 +82,10 @@ class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
         metric = utils.get_client(self).metric.get(
             metric=parsed_args.metric,
             resource_id=parsed_args.resource_id)
-        utils.format_archive_policy(metric["archive_policy"])
-        utils.format_move_dict_to_root(metric, "archive_policy")
+        metric['archive_policy/name'] = metric["archive_policy"]["name"]
+        del metric['archive_policy']
+        del metric['created_by_user_id']
+        del metric['created_by_project_id']
         utils.format_resource_for_metric(metric)
         return self.dict2columns(metric)
 
@@ -130,9 +132,11 @@ class CliMetricCreate(CliMetricCreateBase):
         if parsed_args.unit:
             metric['unit'] = parsed_args.unit
         metric = utils.get_client(self).metric.create(metric)
-        utils.format_archive_policy(metric["archive_policy"])
-        utils.format_move_dict_to_root(metric, "archive_policy")
         utils.format_resource_for_metric(metric)
+        metric['archive_policy/name'] = metric["archive_policy"]["name"]
+        del metric['archive_policy']
+        del metric['created_by_user_id']
+        del metric['created_by_project_id']
         return self.dict2columns(metric)
 
 
