@@ -76,8 +76,8 @@ class AggregatesClientTest(base.ClientTestBase):
         result = self.gnocchi(
             'aggregates', params=("'(+ 2 (metric (%s mean) (%s mean)))' "
                                   "--granularity 1 "
-                                  "--start 2015-03-06T14:32:00 "
-                                  "--stop 2015-03-06T14:36:00 "
+                                  "--start 2015-03-06T14:32:00Z "
+                                  "--stop 2015-03-06T14:36:00Z "
                                   ) % (metric1["id"], metric2["id"]))
         measures = json.loads(result)
         self.assertEqual(4, len(measures))
@@ -107,8 +107,8 @@ class AggregatesClientTest(base.ClientTestBase):
                 "--groupby user_id "
                 "--resource-type generic "
                 "--granularity 1 "
-                "--start 2015-03-06T14:32:00 "
-                "--stop 2015-03-06T14:36:00 "
+                "--start 2015-03-06T14:32:00Z "
+                "--stop 2015-03-06T14:36:00Z "
             ))
         measures = json.loads(result)
         self.assertEqual(4, len(measures))
