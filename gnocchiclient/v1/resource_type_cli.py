@@ -63,13 +63,16 @@ class CliResourceTypeCreate(show.ShowOne):
             attrs["required"] = bool(distutils.util.strtobool(config.pop(0)))
         while config:
             param, _, value = config.pop(0).partition("=")
+            opts = attrs
+            if param == 'fill':
+                opts = attrs.setdefault("options", {})
             try:
-                attrs[param] = int(value)
+                opts[param] = int(value)
             except ValueError:
                 try:
-                    attrs[param] = float(value)
+                    opts[param] = float(value)
                 except ValueError:
-                    attrs[param] = value
+                    opts[param] = value
         return (name, attrs)
 
     def take_action(self, parsed_args):

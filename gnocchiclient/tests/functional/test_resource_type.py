@@ -31,7 +31,7 @@ class ResourceTypeClientTest(base.ClientTestBase):
         # CREATE
         result = self.gnocchi(
             u'resource-type',
-            params=u"create -a foo:string:1:max_length=16 "
+            params=u"create -a foo:string:true:max_length=16 "
                    "-a bar:number:no:max=32 %s" % self.RESOURCE_TYPE)
         resource = json.loads(result)
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
@@ -52,12 +52,12 @@ class ResourceTypeClientTest(base.ClientTestBase):
         result = self.gnocchi(
             u'resource-type',
             params=u"update -r foo "
-            "-a new:number:no:max=16 %s" % self.RESOURCE_TYPE)
+            "-a new:number:yes:max=16:fill=8 %s" % self.RESOURCE_TYPE)
         resource = json.loads(result)
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
         self.assertNotIn("attributes/foo", resource)
         self.assertEqual(
-            "max=16, min=None, required=False, type=number",
+            "max=16, min=None, required=True, type=number",
             resource["attributes/new"])
 
         # SHOW
@@ -67,7 +67,7 @@ class ResourceTypeClientTest(base.ClientTestBase):
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
         self.assertNotIn("attributes/foo", resource)
         self.assertEqual(
-            "max=16, min=None, required=False, type=number",
+            "max=16, min=None, required=True, type=number",
             resource["attributes/new"])
 
         # Create a resource for this type
