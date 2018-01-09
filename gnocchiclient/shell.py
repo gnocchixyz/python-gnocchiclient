@@ -94,7 +94,7 @@ class GnocchiShell(app.App):
         super(GnocchiShell, self).__init__(
             description='Gnocchi command line client',
             version=__version__,
-            command_manager=GnocchiCommandManager(None),
+            command_manager=GnocchiCommandManager('gnocchiclient'),
             deferred_help=True,
         )
 
