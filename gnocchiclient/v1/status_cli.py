@@ -22,9 +22,14 @@ class CliStatusShow(show.ShowOne):
     def take_action(self, parsed_args):
         status = utils.get_client(self).status.get()
 
-        return self.dict2columns({
+        d = {
             "storage/total number of measures to process":
             status['storage']['summary']['measures'],
             "storage/number of metric having measures to process":
             status['storage']['summary']['metrics'],
-        })
+        }
+
+        if 'metricd' in status:
+            d["metricd/processors"] = status['metricd']['processors']
+
+        return self.dict2columns(d)
