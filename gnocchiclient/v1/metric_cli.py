@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import iso8601
 import json
 import logging
 import sys
@@ -239,8 +240,13 @@ class CliMeasuresAdd(CliMeasuresAddBase):
 
     def measure(self, measure):
         timestamp, __, value = measure.rpartition("@")
-        return {'timestamp': utils.parse_date(timestamp).isoformat(),
-                'value': float(value)}
+        try:
+            timestamp = utils.parse_date(timestamp).isoformat()
+        except iso8601.iso8601.ParseError:
+            # NOTE(sileht): return string as-is and let the server decide
+            # if it's valid. (like +2hour, now, -5day)
+            pass
+        return {'timestamp': timestamp, 'value': float(value)}
 
     def get_parser(self, prog_name):
         parser = super(CliMeasuresAdd, self).get_parser(prog_name)

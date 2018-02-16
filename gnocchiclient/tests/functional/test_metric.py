@@ -77,6 +77,31 @@ class MetricClientTest(base.ClientTestBase):
                               u" --limit 2")
         self.assertEqual(2, len(json.loads(result)))
 
+    def test_metric_measures_exhautic_format(self):
+        ap_name = str(uuid.uuid4())
+        # PREPARE AN ARCHIVE POLICY
+        self.gnocchi("archive-policy", params="create " + ap_name +
+                     " --back-window 0 -d granularity:1s,points:86400")
+        # CREATE METRIC
+        metric_name = str(uuid.uuid4())
+        result = self.gnocchi(
+            u'metric', params=u"create"
+            u" --archive-policy-name " + ap_name + " " + metric_name)
+        metric = json.loads(result)
+
+        # MEASURES ADD
+        self.gnocchi('measures',
+                     params=("add %s "
+                             "--measure 'now@42' ")
+                     % metric["id"], has_output=False)
+
+        # MEASURES SHOW
+        result = self.gnocchi('measures', params="show --refresh " +
+                              metric["id"])
+        measures = json.loads(result)
+        self.assertEqual(1, len(measures))
+        self.assertEqual(42, measures[0]['value'])
+
     def test_metric_measures_show_tz(self):
         ap_name = str(uuid.uuid4())
         # PREPARE AN ARCHIVE POLICY
