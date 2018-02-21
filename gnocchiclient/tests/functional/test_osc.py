@@ -22,4 +22,4 @@ class OpenstackClentPluginTest(base.ClientTestBase):
     def test_osc_client(self):
         result = self.openstack("metric status")
         status = json.loads(result)
-        self.assertEqual(2, len(status))
+        self.assertGreaterEqual(3, len(status))
