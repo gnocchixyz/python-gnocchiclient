@@ -18,7 +18,7 @@ class MetricClientTest(base.ClientTestBase):
     def test_status_scenario(self):
         result = self.gnocchi("status")
         status = json.loads(result)
-        self.assertEqual(2, len(status))
+        self.assertGreaterEqual(3, len(status))
 
     def test_build_scenario(self):
         result = self.gnocchi("server version")
