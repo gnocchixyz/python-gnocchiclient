@@ -72,4 +72,8 @@ client time zone.
 Commands descriptions
 +++++++++++++++++++++
 
-.. include:: gnocchi.rst
+.. autodoc-gnocchi:: gnocchiclient.shell.GnocchiShell
+   :application: gnocchi
+
+.. autodoc-gnocchi:: openstack.metric.v1
+   :application: gnocchi
