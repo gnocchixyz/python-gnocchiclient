@@ -46,10 +46,6 @@ class RetryAfterException(ClientException):
         super(RetryAfterException, self).__init__(*args, **kwargs)
 
 
-class MutipleMeaningException(object):
-    """An mixin for exception that can be enhanced by reading the details"""
-
-
 class ConnectionFailure(ClientException):
     """Connection failure"""
 
@@ -93,27 +89,27 @@ class NotFound(ClientException):
     message = "Not found"
 
 
-class MetricNotFound(NotFound, MutipleMeaningException):
+class MetricNotFound(NotFound):
     message = "Metric not found"
     match = re.compile("Metric .* does not exist")
 
 
-class ResourceNotFound(NotFound, MutipleMeaningException):
+class ResourceNotFound(NotFound):
     message = "Resource not found"
     match = re.compile("Resource .* does not exist")
 
 
-class ResourceTypeNotFound(NotFound, MutipleMeaningException):
+class ResourceTypeNotFound(NotFound):
     message = "Resource type not found"
     match = re.compile("Resource type .* does not exist")
 
 
-class ArchivePolicyNotFound(NotFound, MutipleMeaningException):
+class ArchivePolicyNotFound(NotFound):
     message = "Archive policy not found"
     match = re.compile("Archive policy .* does not exist")
 
 
-class ArchivePolicyRuleNotFound(NotFound, MutipleMeaningException):
+class ArchivePolicyRuleNotFound(NotFound):
     message = "Archive policy rule not found"
     match = re.compile("Archive policy rule .* does not exist")
 
@@ -136,27 +132,27 @@ class Conflict(ClientException):
     message = "Conflict"
 
 
-class NamedMetricAlreadyExists(Conflict, MutipleMeaningException):
+class NamedMetricAlreadyExists(Conflict):
     message = "Named metric already exists"
     match = re.compile("Named metric .* already exist")
 
 
-class ResourceTypeAlreadyExists(Conflict, MutipleMeaningException):
+class ResourceTypeAlreadyExists(Conflict):
     message = "Resource type already exists"
     match = re.compile("Resource type .* already exists")
 
 
-class ResourceAlreadyExists(Conflict, MutipleMeaningException):
+class ResourceAlreadyExists(Conflict):
     message = "Resource already exists"
     match = re.compile("Resource .* already exists")
 
 
-class ArchivePolicyAlreadyExists(Conflict, MutipleMeaningException):
+class ArchivePolicyAlreadyExists(Conflict):
     message = "Archive policy already exists"
     match = re.compile("Archive policy .* already exists")
 
 
-class ArchivePolicyRuleAlreadyExists(Conflict, MutipleMeaningException):
+class ArchivePolicyRuleAlreadyExists(Conflict):
     message = "Archive policy rule already exists"
     match = re.compile("Archive policy rule .* already exists")
 
