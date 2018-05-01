@@ -2,6 +2,7 @@ rules:
   default:
     protection:
       required_pull_request_reviews:
+        strict: True
         required_approving_review_count: 2
   branches:
     stable/.*:
