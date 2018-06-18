@@ -107,7 +107,7 @@ class CliArchivePolicyUpdate(CliArchivePolicyWriteBase):
     def take_action(self, parsed_args):
         archive_policy = utils.dict_from_parsed_args(
             parsed_args, ['definition'])
-        ap = self.app.client.archive_policy.update(
+        ap = utils.get_client(self).archive_policy.update(
             name=parsed_args.name, archive_policy=archive_policy)
         if parsed_args.formatter == 'table':
             utils.format_archive_policy(ap)
