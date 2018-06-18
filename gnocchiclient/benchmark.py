@@ -185,7 +185,7 @@ class CliBenchmarkMetricShow(CliBenchmarkBase,
     def take_action(self, parsed_args):
         pool = BenchmarkPool(parsed_args.workers)
         LOG.info("Getting metrics")
-        futures = pool.map_job(self.app.client.metric.get,
+        futures = pool.map_job(utils.get_client(self).metric.get,
                                parsed_args.metric * parsed_args.count,
                                resource_id=parsed_args.resource_id)
         result, runtime, stats = pool.wait_job("show", futures)
@@ -213,7 +213,7 @@ class CliBenchmarkMetricCreate(CliBenchmarkBase,
         LOG.info("Creating metrics")
         futures = pool.submit_job(
             parsed_args.count,
-            self.app.client.metric._create_new,
+            utils.get_client(self).metric._create_new,
             archive_policy_name=parsed_args.archive_policy_name,
             resource_id=parsed_args.resource_id)
         created_metrics, runtime, stats = pool.wait_job("create", futures)
@@ -221,7 +221,7 @@ class CliBenchmarkMetricCreate(CliBenchmarkBase,
         if not parsed_args.keep:
             LOG.info("Deleting metrics")
             pool = BenchmarkPool(parsed_args.workers)
-            futures = pool.map_job(self.app.client.metric.delete,
+            futures = pool.map_job(utils.get_client(self).metric.delete,
                                    [m['id'] for m in created_metrics])
             _, runtime, dstats = pool.wait_job("delete", futures)
             stats.update(dstats)
@@ -293,7 +293,7 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
 
         times = parsed_args.count // parsed_args.batch
         futures = pool.map_job(functools.partial(
-            self.app.client.metric.add_measures,
+            utils.get_client(self).metric.add_measures,
             parsed_args.metric), itertools.repeat(measures, times),
             resource_id=parsed_args.resource_id)
         _, runtime, stats = pool.wait_job("push", futures)
@@ -308,7 +308,7 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
         if parsed_args.wait:
             sw = StopWatch()
             while True:
-                status = self.app.client.status.get()
+                status = utils.get_client(self).status.get()
                 remaining = int(status['storage']['summary']['measures'])
                 if remaining == 0:
                     stats['extra wait to process measures'] = (
@@ -340,7 +340,7 @@ class CliBenchmarkMeasuresShow(CliBenchmarkBase,
         pool = BenchmarkPool(parsed_args.workers)
         LOG.info("Getting measures")
         futures = pool.submit_job(parsed_args.count,
-                                  self.app.client.metric.get_measures,
+                                  utils.get_client(self).metric.get_measures,
                                   metric=parsed_args.metric,
                                   resource_id=parsed_args.resource_id,
                                   aggregation=parsed_args.aggregation,
