@@ -124,7 +124,7 @@ class GnocchiShell(app.App):
         # CLI. A lot of rc files do not export OS_AUTH_TYPE=password and
         # assumes it is the default. It's not in that case, but since we can't
         # fix all the rc files of the world, workaround it here.
-        if ("OS_AUTH_PASSWORD" in os.environ and
+        if ("OS_PASSWORD" in os.environ and
            "OS_AUTH_TYPE" not in os.environ):
             os.environ.set("OS_AUTH_TYPE", "password")
 
