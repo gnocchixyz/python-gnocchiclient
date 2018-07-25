@@ -21,13 +21,11 @@ class ArchivePolicyManager(base.Manager):
     url = "v1/archive_policy/"
 
     def list(self):
-        """List archive policies
-
-        """
+        """List archive policies."""
         return self._get(self.url).json()
 
     def get(self, name):
-        """Get an archive policy
+        """Get an archive policy.
 
         :param name: Name of the archive policy
         :type name: str
@@ -35,7 +33,7 @@ class ArchivePolicyManager(base.Manager):
         return self._get(self.url + name).json()
 
     def create(self, archive_policy):
-        """Create an archive policy
+        """Create an archive policy.
 
         :param archive_policy: the archive policy
         :type archive_policy: dict
@@ -46,7 +44,7 @@ class ArchivePolicyManager(base.Manager):
             data=ujson.dumps(archive_policy)).json()
 
     def update(self, name, archive_policy):
-        """Update an archive policy
+        """Update an archive policy.
 
         :param name: the name of archive policy
         :type name: str
@@ -60,7 +58,7 @@ class ArchivePolicyManager(base.Manager):
             data=ujson.dumps(archive_policy)).json()
 
     def delete(self, name):
-        """Delete an archive policy
+        """Delete an archive policy.
 
         :param name: Name of the archive policy
         :type name: str

@@ -22,9 +22,13 @@ import time
 import types
 
 from cliff import show
+
 import futurist
+
 import iso8601
+
 from monotonic import monotonic as now  # noqa
+
 import six.moves
 
 from gnocchiclient import utils
@@ -121,16 +125,15 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
             verb + ' runtime (cumulated)': "%.2f seconds" % sum(latencies),
             verb + ' executed': self.statistics.executed,
             verb + ' speed': (
-                "%.2f %s/s" % ((self.statistics.executed * self._max_workers
-                                / sum(latencies))
+                "%.2f %s/s" % ((self.statistics.executed * self._max_workers /
+                                sum(latencies))
                                if runtime != 0 else 0, verb)
             ),
             verb + ' failures': self.statistics.failures,
             verb + ' failures rate': (
                 "%.2f %%" % (
-                    100
-                    * self.statistics.failures
-                    / float(self.statistics.executed)
+                    100 * self.statistics.failures /
+                    float(self.statistics.executed)
                 )
             ),
             verb + ' latency min': min(latencies),
@@ -170,7 +173,7 @@ class CliBenchmarkBase(show.ShowOne):
 
 class CliBenchmarkMetricShow(CliBenchmarkBase,
                              metric_cli.CliMetricWithResourceID):
-    """Do benchmark testing of metric show"""
+    """Do benchmark testing of metric show."""
 
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricShow, self).get_parser(prog_name)
@@ -194,7 +197,7 @@ class CliBenchmarkMetricShow(CliBenchmarkBase,
 
 class CliBenchmarkMetricCreate(CliBenchmarkBase,
                                metric_cli.CliMetricCreateBase):
-    """Do benchmark testing of metric creation"""
+    """Do benchmark testing of metric creation."""
 
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricCreate, self).get_parser(prog_name)
@@ -231,7 +234,7 @@ class CliBenchmarkMetricCreate(CliBenchmarkBase,
 
 class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                               metric_cli.CliMeasuresAddBase):
-    """Do benchmark testing of adding measurements"""
+    """Do benchmark testing of adding measurements."""
 
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMeasuresAdd, self).get_parser(prog_name)
@@ -245,8 +248,8 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                             help="Number of measures to send in each batch")
         parser.add_argument("--timestamp-start", "-s",
                             default=(
-                                datetime.datetime.now(tz=iso8601.iso8601.UTC)
-                                - datetime.timedelta(days=365)),
+                                datetime.datetime.now(tz=iso8601.iso8601.UTC) -
+                                datetime.timedelta(days=365)),
                             type=utils.parse_date,
                             help="First timestamp to use")
         parser.add_argument("--timestamp-end", "-e",
@@ -326,7 +329,7 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
 
 class CliBenchmarkMeasuresShow(CliBenchmarkBase,
                                metric_cli.CliMeasuresShow):
-    """Do benchmark testing of measurements show"""
+    """Do benchmark testing of measurements show."""
 
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMeasuresShow, self).get_parser(prog_name)

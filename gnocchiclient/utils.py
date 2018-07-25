@@ -12,7 +12,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from dateutil import tz
+
 import iso8601
+
 import six
 from six.moves.urllib import parse as urllib_parse
 

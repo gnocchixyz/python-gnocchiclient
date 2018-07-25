@@ -17,7 +17,7 @@ from gnocchiclient import utils
 
 
 class CliCapabilitiesList(show.ShowOne):
-    """List capabilities"""
+    """List capabilities."""
 
     def take_action(self, parsed_args):
         caps = utils.get_client(self).capabilities.list()

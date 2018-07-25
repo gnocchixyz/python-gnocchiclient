@@ -17,7 +17,7 @@ from gnocchiclient import utils
 
 
 class CliBuildShow(show.ShowOne):
-    """Show the version of Gnocchi server"""
+    """Show the version of Gnocchi server."""
 
     def take_action(self, parsed_args):
         return self.dict2columns({

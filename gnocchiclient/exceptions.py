@@ -18,6 +18,7 @@ import six
 
 class ClientException(Exception):
     """The base exception class for all exceptions this library raises."""
+
     message = 'Unknown Error'
 
     def __init__(self, code=None, message=None, request_id=None,
@@ -39,6 +40,7 @@ class ClientException(Exception):
 
 class RetryAfterException(ClientException):
     """The base exception for ClientExceptions that use Retry-After header."""
+
     def __init__(self, *args, **kwargs):
         try:
             self.retry_after = int(kwargs.pop('retry_after'))
@@ -49,44 +51,48 @@ class RetryAfterException(ClientException):
 
 
 class ConnectionFailure(ClientException):
-    """Connection failure"""
+    """Connection failure."""
 
 
 class ConnectionTimeout(ClientException):
-    """Connection timeout"""
+    """Connection timeout."""
 
 
 class UnknownConnectionError(ClientException):
-    """Unknown connection error"""
+    """Unknown connection error."""
 
 
 class SSLError(ClientException):
-    """SSL connection error"""
+    """SSL connection error."""
 
 
 class BadRequest(ClientException):
     """HTTP 400 - Bad request: you sent some malformed data."""
+
     http_status = 400
     message = "Bad request"
 
 
 class Unauthorized(ClientException):
     """HTTP 401 - Unauthorized: bad credentials."""
+
     http_status = 401
     message = "Unauthorized"
 
 
 class Forbidden(ClientException):
-    """HTTP 403 - Forbidden:
+    """HTTP 403 - Forbidden.
 
-    your credentials don't give you access to this resource.
+    Your credentials don't give you access to this resource.
     """
+
     http_status = 403
     message = "Forbidden"
 
 
 class NotFound(ClientException):
-    """HTTP 404 - Not found"""
+    """HTTP 404 - Not found."""
+
     http_status = 404
     message = "Not found"
 
@@ -117,19 +123,22 @@ class ArchivePolicyRuleNotFound(NotFound):
 
 
 class MethodNotAllowed(ClientException):
-    """HTTP 405 - Method Not Allowed"""
+    """HTTP 405 - Method Not Allowed."""
+
     http_status = 405
     message = "Method Not Allowed"
 
 
 class NotAcceptable(ClientException):
-    """HTTP 406 - Not Acceptable"""
+    """HTTP 406 - Not Acceptable."""
+
     http_status = 406
     message = "Not Acceptable"
 
 
 class Conflict(ClientException):
-    """HTTP 409 - Conflict"""
+    """HTTP 409 - Conflict."""
+
     http_status = 409
     message = "Conflict"
 
@@ -160,28 +169,31 @@ class ArchivePolicyRuleAlreadyExists(Conflict):
 
 
 class OverLimit(RetryAfterException):
-    """HTTP 413 - Over limit:
+    """HTTP 413 - Over limit.
 
-    you're over the API limits for this time period.
+    You're over the API limits for this time period.
     """
+
     http_status = 413
     message = "Over limit"
 
 
 class RateLimit(RetryAfterException):
-    """HTTP 429 - Rate limit:
+    """HTTP 429 - Rate limit.
 
-    you've sent too many requests for this time period.
+    You've sent too many requests for this time period.
     """
+
     http_status = 429
     message = "Rate limit"
 
 
-class NotImplemented(ClientException):
-    """HTTP 501 - Not Implemented:
+class NotImplemented(ClientException):  # noqa
+    """HTTP 501 - Not Implemented.
 
-    the server does not support this operation.
+    The server does not support this operation.
     """
+
     http_status = 501
     message = "Not Implemented"
 
@@ -211,7 +223,6 @@ def from_response(response, method=None):
         if resp.status_code != 200:
             raise from_response(resp)
     """
-
     if response.status_code:
         cls, enhanced_classes = _code_map.get(response.status_code,
                                               (ClientException, []))

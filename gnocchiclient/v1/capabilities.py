@@ -18,7 +18,5 @@ class CapabilitiesManager(base.Manager):
     cap_url = "v1/capabilities/"
 
     def list(self):
-        """List capabilities
-
-        """
+        """List capabilities."""
         return self._get(self.cap_url).json()
