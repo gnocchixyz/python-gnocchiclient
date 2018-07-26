@@ -30,6 +30,23 @@ class ExceptionsTest(testtools.TestCase):
         exc = exceptions.from_response(r)
         self.assertIsInstance(exc, exceptions.ArchivePolicyRuleNotFound)
 
+    def test_from_response_404_with_detail(self):
+        r = models.Response()
+        r.status_code = 404
+        r.headers['Content-Type'] = "application/json"
+        r._content = json.dumps({
+            "code": 404,
+            "description": {
+                "cause": "Aggregation method does not exist for this metric",
+                "detail": {
+                    "aggregation_method": "rate:mean",
+                    "metric": "a914dad6-b8f6-42f6-b090-6daa29725caf",
+                }},
+            "title": "Not Found"
+        }).encode('utf-8')
+        exc = exceptions.from_response(r)
+        self.assertIsInstance(exc, exceptions.ClientException)
+
     def test_resource_type_before_resource(self):
         r = models.Response()
         r.status_code = 404
