@@ -15,11 +15,10 @@ import shlex
 import six
 import subprocess
 import time
+import unittest
 
-import testtools
 
-
-class ClientTestBase(testtools.TestCase):
+class ClientTestBase(unittest.TestCase):
     """Base class for gnocchiclient tests.
 
     Establishes the gnocchi client and retrieves the essential environment
