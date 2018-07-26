@@ -14,8 +14,6 @@ import os
 import tempfile
 import uuid
 
-import fixtures
-
 from gnocchiclient import auth
 from gnocchiclient import client
 from gnocchiclient.tests.functional import base
@@ -122,7 +120,10 @@ class MetricClientTest(base.ClientTestBase):
                      % metric["id"], has_output=False)
 
         # MEASURES SHOW
-        self.useFixture(fixtures.EnvironmentVariable("TZ", "Europe/Paris"))
+        def _delete_tz():
+            os.unsetenv("TZ")
+        self.addCleanup(_delete_tz)
+        os.putenv("TZ", "Europe/Paris")
         result = self.gnocchi('measures', params="show --refresh " +
                               metric["id"])
         measures = json.loads(result)

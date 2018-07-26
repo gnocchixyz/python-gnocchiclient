@@ -12,14 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import json
+import unittest
 
 from requests import models
-import testtools
 
 from gnocchiclient import exceptions
 
 
-class ExceptionsTest(testtools.TestCase):
+class ExceptionsTest(unittest.TestCase):
     def test_from_response_404(self):
         r = models.Response()
         r.status_code = 404
