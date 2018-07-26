@@ -10,7 +10,7 @@ cache:
 env:
   - TARGET: pep8
   - TARGET: py27
-  - TARGET: py35
+  - TARGET: py37
   - TARGET: docs-gnocchi.xyz
 
 before_script:
