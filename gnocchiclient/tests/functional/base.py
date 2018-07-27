@@ -12,10 +12,11 @@
 
 import os
 import shlex
-import six
 import subprocess
 import time
 import unittest
+
+import six
 
 
 class ClientTestBase(unittest.TestCase):
@@ -35,8 +36,7 @@ class ClientTestBase(unittest.TestCase):
                   has_output=True):
         flags = ((("--os-auth-type gnocchi-basic "
                    "--os-user admin "
-                   "--os-endpoint %s") % self.endpoint)
-                 + ' ' + flags)
+                   "--os-endpoint %s") % self.endpoint) + ' ' + flags)
         return self._run("openstack", action, flags, params, fail_ok,
                          merge_stderr, input, has_output)
 
@@ -45,8 +45,7 @@ class ClientTestBase(unittest.TestCase):
                 has_output=True):
         flags = ((("--os-auth-plugin gnocchi-basic "
                    "--user admin "
-                   "--endpoint %s") % self.endpoint)
-                 + ' ' + flags)
+                   "--endpoint %s") % self.endpoint) + ' ' + flags)
         return self._run("gnocchi", action, flags, params, fail_ok,
                          merge_stderr, input, has_output)
 

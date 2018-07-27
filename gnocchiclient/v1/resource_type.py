@@ -24,7 +24,7 @@ class ResourceTypeManager(base.Manager):
         return self._get(self.url).json()
 
     def create(self, resource_type):
-        """Create a resource type
+        """Create a resource type.
 
         :param resource_type: resource type
         :type resource_type: dict
@@ -35,7 +35,7 @@ class ResourceTypeManager(base.Manager):
             data=ujson.dumps(resource_type)).json()
 
     def get(self, name):
-        """Get a resource type
+        """Get a resource type.
 
         :param name: name of the resource type
         :type name: str
@@ -44,7 +44,7 @@ class ResourceTypeManager(base.Manager):
                          headers={'Content-Type': "application/json"}).json()
 
     def delete(self, name):
-        """Delete a resource type
+        """Delete a resource type.
 
         :param resource_type: Resource type
         :type resource_type: dict
@@ -52,7 +52,7 @@ class ResourceTypeManager(base.Manager):
         self._delete(self.url + name)
 
     def update(self, name, operations):
-        """Update a resource type
+        """Update a resource type.
 
         :param name: name of the resource type
         :type name: str

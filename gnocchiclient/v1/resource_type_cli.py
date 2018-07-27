@@ -21,7 +21,7 @@ from gnocchiclient import utils
 
 
 class CliResourceTypeList(lister.Lister):
-    """List resource types"""
+    """List resource types."""
 
     COLS = ('name', 'attributes')
 
@@ -34,7 +34,7 @@ class CliResourceTypeList(lister.Lister):
 
 
 class CliResourceTypeCreate(show.ShowOne):
-    """Create a resource type"""
+    """Create a resource type."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceTypeCreate, self).get_parser(prog_name)
@@ -113,7 +113,7 @@ class CliResourceTypeUpdate(CliResourceTypeCreate):
 
 
 class CliResourceTypeShow(show.ShowOne):
-    """Show a resource type"""
+    """Show a resource type."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceTypeShow, self).get_parser(prog_name)
@@ -127,7 +127,7 @@ class CliResourceTypeShow(show.ShowOne):
 
 
 class CliResourceTypeDelete(command.Command):
-    """Delete a resource type"""
+    """Delete a resource type."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceTypeDelete, self).get_parser(prog_name)

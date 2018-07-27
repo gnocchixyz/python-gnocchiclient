@@ -16,8 +16,8 @@ import uuid
 
 from gnocchiclient import auth
 from gnocchiclient import client
-from gnocchiclient.tests.functional import base
 from gnocchiclient import utils
+from gnocchiclient.tests.functional import base
 
 
 class MetricClientTest(base.ClientTestBase):

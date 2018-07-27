@@ -19,7 +19,7 @@ from gnocchiclient import utils
 
 
 class CliArchivePolicyRuleList(lister.Lister):
-    """List archive policy rules"""
+    """List archive policy rules."""
 
     COLS = ('name', 'archive_policy_name', 'metric_pattern')
 
@@ -29,7 +29,7 @@ class CliArchivePolicyRuleList(lister.Lister):
 
 
 class CliArchivePolicyRuleShow(show.ShowOne):
-    """Show an archive policy rule"""
+    """Show an archive policy rule."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleShow, self).get_parser(prog_name)
@@ -44,7 +44,7 @@ class CliArchivePolicyRuleShow(show.ShowOne):
 
 
 class CliArchivePolicyRuleCreate(show.ShowOne):
-    """Create an archive policy rule"""
+    """Create an archive policy rule."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleCreate, self).get_parser(prog_name)
@@ -67,7 +67,7 @@ class CliArchivePolicyRuleCreate(show.ShowOne):
 
 
 class CliArchivePolicyRuleUpdate(show.ShowOne):
-    """Update an archive policy rule"""
+    """Update an archive policy rule."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleUpdate, self).get_parser(prog_name)
@@ -87,7 +87,7 @@ class CliArchivePolicyRuleUpdate(show.ShowOne):
 
 
 class CliArchivePolicyRuleDelete(command.Command):
-    """Delete an archive policy rule"""
+    """Delete an archive policy rule."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleDelete, self).get_parser(prog_name)

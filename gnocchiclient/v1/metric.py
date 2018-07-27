@@ -15,7 +15,9 @@ import datetime
 import uuid
 
 from debtcollector import removals
+
 import iso8601
+
 import ujson
 
 from gnocchiclient import utils
@@ -29,7 +31,7 @@ class MetricManager(base.Manager):
     resources_batch_url = "v1/batch/resources/metrics/measures"
 
     def list(self, limit=None, marker=None, sorts=None):
-        """List metrics
+        """List metrics.
 
         :param limit: maximum number of resources to return
         :type limit: int
@@ -63,7 +65,7 @@ class MetricManager(base.Manager):
                             attribute)
 
     def get(self, metric, resource_id=None):
-        """Get an metric
+        """Get an metric.
 
         :param metric: ID or Name of the metric
         :type metric: str
@@ -83,7 +85,7 @@ class MetricManager(base.Manager):
     # pickle a debtcollector-ed method.
     def _create_new(self, name=None, archive_policy_name=None,
                     resource_id=None, unit=None):
-        """Create an metric
+        """Create an metric.
 
         :param name: Metric name.
         :type name: str
@@ -94,7 +96,6 @@ class MetricManager(base.Manager):
         :param unit: The unit of the metric.
         :type unit: str
         """
-
         metric = {}
         if name is not None:
             metric["name"] = name
@@ -125,7 +126,7 @@ class MetricManager(base.Manager):
                archive_policy_name=None,
                resource_id=None,
                unit=None):
-        """Create an metric
+        """Create an metric.
 
         :param name: Metric name.
         :type name: str
@@ -136,7 +137,6 @@ class MetricManager(base.Manager):
         :param unit: The unit of the metric.
         :type unit: str
         """
-
         if metric is None:
             metric = {}
             if name is not None:
@@ -174,7 +174,7 @@ class MetricManager(base.Manager):
         return self.get(metric_name, resource_id)
 
     def delete(self, metric, resource_id=None):
-        """Delete an metric
+        """Delete an metric.
 
         :param metric: ID or Name of the metric
         :type metric: str
@@ -190,7 +190,7 @@ class MetricManager(base.Manager):
         self._delete(url)
 
     def add_measures(self, metric, measures, resource_id=None):
-        """Add measurements to a metric
+        """Add measurements to a metric.
 
         :param metric: ID or Name of the metric
         :type metric: str
@@ -210,25 +210,23 @@ class MetricManager(base.Manager):
             data=ujson.dumps(measures))
 
     def batch_metrics_measures(self, measures):
-        """Add measurements to metrics
+        """Add measurements to metrics.
 
         :param measures: measurements
         :type dict(metric_id: list of dict(timestamp=timestamp, value=float))
         """
-
         return self._post(
             self.metric_batch_url,
             headers={'Content-Type': "application/json"},
             data=ujson.dumps(measures))
 
     def batch_resources_metrics_measures(self, measures, create_metrics=False):
-        """Add measurements to named metrics if resources
+        """Add measurements to named metrics if resources.
 
         :param measures: measurements
         :type dict(resource_id: dict(metric_name:
             list of dict(timestamp=timestamp, value=float)))
         """
-
         return self._post(
             self.resources_batch_url,
             headers={'Content-Type': "application/json"},
@@ -238,7 +236,7 @@ class MetricManager(base.Manager):
     def get_measures(self, metric, start=None, stop=None, aggregation=None,
                      granularity=None, resource_id=None, refresh=False,
                      resample=None, **kwargs):
-        """Get measurements of a metric
+        """Get measurements of a metric.
 
         :param metric: ID or Name of the metric
         :type metric: str
@@ -261,7 +259,6 @@ class MetricManager(base.Manager):
         All other arguments are arguments are dedicated to custom aggregation
         method passed as-is to the Gnocchi.
         """
-
         if isinstance(start, datetime.datetime):
             start = start.isoformat()
         if isinstance(stop, datetime.datetime):
@@ -285,7 +282,7 @@ class MetricManager(base.Manager):
                     reaggregation=None, granularity=None,
                     needed_overlap=None, resource_type="generic",
                     groupby=None, refresh=False, resample=None, fill=None):
-        """Get measurements of an aggregated metrics
+        """Get measurements of an aggregated metrics.
 
         :param metrics: IDs of metric or metric name
         :type metric: list or str
@@ -318,7 +315,6 @@ class MetricManager(base.Manager):
         of *query dictionary*
         http://docs.openstack.org/developer/gnocchi/rest.html#searching-for-resources
         """
-
         if isinstance(start, datetime.datetime):
             start = start.isoformat()
         if isinstance(stop, datetime.datetime):

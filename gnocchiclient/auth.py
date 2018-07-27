@@ -19,12 +19,13 @@ from keystoneauth1 import plugin
 
 
 class GnocchiNoAuthPlugin(plugin.BaseAuthPlugin):
-    """No authentication plugin for Gnocchi
+    """No authentication plugin for Gnocchi.
 
     This is a keystoneauth plugin that instead of
     doing authentication, it just fill the 'x-user-id'
     and 'x-project-id' headers with the user provided one.
     """
+
     def __init__(self, user_id, project_id, roles, endpoint):
         self._user_id = user_id
         self._project_id = project_id
@@ -88,6 +89,7 @@ class GnocchiNoAuthLoader(loading.BaseLoader):
 
 class GnocchiBasicPlugin(plugin.BaseAuthPlugin):
     """Basic authentication plugin for Gnocchi."""
+
     def __init__(self, user, endpoint):
         self._user = user.encode('utf-8')
         self._endpoint = endpoint

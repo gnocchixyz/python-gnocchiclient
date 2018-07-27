@@ -17,16 +17,15 @@ from gnocchiclient.v1 import base
 
 
 class ArchivePolicyRuleManager(base.Manager):
+
     url = "v1/archive_policy_rule/"
 
     def list(self):
-        """List archive policy rules
-
-        """
+        """List archive policy rules."""
         return self._get(self.url).json()
 
     def get(self, name):
-        """Get an archive policy rules
+        """Get an archive policy rules.
 
         :param name: Name of the archive policy rule
         :type name: str
@@ -34,15 +33,13 @@ class ArchivePolicyRuleManager(base.Manager):
         return self._get(self.url + name).json()
 
     def create(self, archive_policy_rule):
-        """Create an archive policy rule
-
-        """
+        """Create an archive policy rule."""
         return self._post(
             self.url, headers={'Content-Type': "application/json"},
             data=ujson.dumps(archive_policy_rule)).json()
 
     def update(self, name, new_name):
-        """Update an archive policy rule
+        """Update an archive policy rule.
 
         :param name: the name of archive policy rule
         :type name: str
@@ -56,7 +53,7 @@ class ArchivePolicyRuleManager(base.Manager):
             data=ujson.dumps({'name': new_name})).json()
 
     def delete(self, name):
-        """Delete an archive policy rule
+        """Delete an archive policy rule.
 
         :param name: Name of the archive policy rule
         :type name: str

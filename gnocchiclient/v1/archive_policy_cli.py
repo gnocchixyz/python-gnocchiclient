@@ -19,7 +19,7 @@ from gnocchiclient import utils
 
 
 class CliArchivePolicyList(lister.Lister):
-    """List archive policies"""
+    """List archive policies."""
 
     COLS = ('name',
             'back_window', 'definition', 'aggregation_methods')
@@ -33,7 +33,7 @@ class CliArchivePolicyList(lister.Lister):
 
 
 class CliArchivePolicyShow(show.ShowOne):
-    """Show an archive policy"""
+    """Show an archive policy."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyShow, self).get_parser(prog_name)
@@ -54,8 +54,8 @@ def archive_policy_definition(string):
     defs = {}
     for part in parts:
         attr, __, value = part.partition(":")
-        if (attr not in ['granularity', 'points', 'timespan']
-                or value is None):
+        if (attr not in ['granularity', 'points', 'timespan'] or
+           value is None):
             raise ValueError
         defs[attr] = value
     if len(defs) < 2:
@@ -77,7 +77,7 @@ class CliArchivePolicyWriteBase(show.ShowOne):
 
 
 class CliArchivePolicyCreate(CliArchivePolicyWriteBase):
-    """Create an archive policy"""
+    """Create an archive policy."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyCreate, self).get_parser(prog_name)
@@ -102,7 +102,7 @@ class CliArchivePolicyCreate(CliArchivePolicyWriteBase):
 
 
 class CliArchivePolicyUpdate(CliArchivePolicyWriteBase):
-    """Update an archive policy"""
+    """Update an archive policy."""
 
     def take_action(self, parsed_args):
         archive_policy = utils.dict_from_parsed_args(
@@ -115,7 +115,7 @@ class CliArchivePolicyUpdate(CliArchivePolicyWriteBase):
 
 
 class CliArchivePolicyDelete(command.Command):
-    """Delete an archive policy"""
+    """Delete an archive policy."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyDelete, self).get_parser(prog_name)

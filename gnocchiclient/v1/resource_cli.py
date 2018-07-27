@@ -22,7 +22,7 @@ from gnocchiclient import utils
 
 
 class CliResourceList(lister.Lister):
-    """List resources"""
+    """List resources."""
 
     COLS = ('id', 'type',
             'project_id', 'user_id',
@@ -74,7 +74,7 @@ class CliResourceList(lister.Lister):
 
 
 class CliResourceHistory(CliResourceList):
-    """Show the history of a resource"""
+    """Show the history of a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceHistory, self).get_parser(prog_name,
@@ -94,7 +94,7 @@ class CliResourceHistory(CliResourceList):
 
 
 class CliResourceSearch(CliResourceList):
-    """Search resources with specified query rules"""
+    """Search resources with specified query rules."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceSearch, self).get_parser(prog_name)
@@ -120,7 +120,7 @@ def normalize_metrics(res):
 
 
 class CliResourceShow(show.ShowOne):
-    """Show a resource"""
+    """Show a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceShow, self).get_parser(prog_name)
@@ -140,7 +140,7 @@ class CliResourceShow(show.ShowOne):
 
 
 class CliResourceCreate(show.ShowOne):
-    """Create a resource"""
+    """Create a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceCreate, self).get_parser(prog_name)
@@ -176,9 +176,9 @@ class CliResourceCreate(show.ShowOne):
                 elif attr_type == "bool":
                     value = bool(distutils.util.strtobool(value))
                 resource[attr] = value
-        if (parsed_args.add_metric
-           or parsed_args.create_metric
-           or (update and parsed_args.delete_metric)):
+        if (parsed_args.add_metric or
+           parsed_args.create_metric or
+           (update and parsed_args.delete_metric)):
             if update:
                 r = utils.get_client(self).resource.get(
                     parsed_args.resource_type,
@@ -215,7 +215,7 @@ class CliResourceCreate(show.ShowOne):
 
 
 class CliResourceUpdate(CliResourceCreate):
-    """Update a resource"""
+    """Update a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceUpdate, self).get_parser(prog_name)
@@ -236,7 +236,7 @@ class CliResourceUpdate(CliResourceCreate):
 
 
 class CliResourceDelete(command.Command):
-    """Delete a resource"""
+    """Delete a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceDelete, self).get_parser(prog_name)
@@ -249,7 +249,7 @@ class CliResourceDelete(command.Command):
 
 
 class CliResourceBatchDelete(show.ShowOne):
-    """Delete a batch of resources based on attribute values"""
+    """Delete a batch of resources based on attribute values."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceBatchDelete, self).get_parser(prog_name)

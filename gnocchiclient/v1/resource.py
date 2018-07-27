@@ -22,7 +22,7 @@ class ResourceManager(base.Manager):
 
     def list(self, resource_type="generic", details=False, history=False,
              limit=None, marker=None, sorts=None):
-        """List resources
+        """List resources.
 
         :param resource_type: Type of the resource
         :type resource_type: str
@@ -46,7 +46,7 @@ class ResourceManager(base.Manager):
         return self._get(url).json()
 
     def get(self, resource_type, resource_id, history=False):
-        """Get a resource
+        """Get a resource.
 
         :param resource_type: Type of the resource
         :type resource_type: str
@@ -61,7 +61,7 @@ class ResourceManager(base.Manager):
 
     def history(self, resource_type, resource_id, details=False,
                 limit=None, marker=None, sorts=None):
-        """Get a resource
+        """Get a resource.
 
         :param resource_type: Type of the resource
         :type resource_type: str
@@ -85,7 +85,7 @@ class ResourceManager(base.Manager):
         return self._get(url).json()
 
     def create(self, resource_type, resource):
-        """Create a resource
+        """Create a resource.
 
         :param resource_type: Type of the resource
         :type resource_type: str
@@ -98,7 +98,7 @@ class ResourceManager(base.Manager):
             data=ujson.dumps(resource)).json()
 
     def update(self, resource_type, resource_id, resource):
-        """Update a resource
+        """Update a resource.
 
         :param resource_type: Type of the resource
         :type resource_type: str
@@ -113,7 +113,7 @@ class ResourceManager(base.Manager):
             data=ujson.dumps(resource)).json()
 
     def delete(self, resource_id):
-        """Delete a resource
+        """Delete a resource.
 
         :param resource_id: ID of the resource
         :type resource_id: str
@@ -121,7 +121,7 @@ class ResourceManager(base.Manager):
         self._delete(self.url + "generic/" + resource_id)
 
     def batch_delete(self, query, resource_type="generic"):
-        """Delete a batch of resources based on attribute values
+        """Delete a batch of resources based on attribute values.
 
         :param resource_type: Type of the resource
         :type resource_type: str
@@ -137,7 +137,7 @@ class ResourceManager(base.Manager):
 
     def search(self, resource_type="generic", query=None, details=False,
                history=False, limit=None, marker=None, sorts=None):
-        """List resources
+        """List resources.
 
         :param resource_type: Type of the resource
         :type resource_type: str
@@ -160,7 +160,6 @@ class ResourceManager(base.Manager):
         of *query dictionary*
         http://gnocchi.xyz/rest.html#searching-for-resources
         """
-
         query = query or {}
         params = utils.build_pagination_options(
             details, history, limit, marker, sorts)

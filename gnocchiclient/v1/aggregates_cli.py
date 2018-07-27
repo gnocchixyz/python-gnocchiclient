@@ -17,7 +17,7 @@ from gnocchiclient import utils
 
 
 class CliAggregates(lister.Lister):
-    """Get measurements of aggregated metrics"""
+    """Get measurements of aggregated metrics."""
 
     COLS = ('name', 'timestamp', 'granularity', 'value')
 

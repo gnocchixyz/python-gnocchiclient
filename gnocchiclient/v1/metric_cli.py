@@ -11,7 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import iso8601
 import json
 import logging
 import sys
@@ -19,6 +18,8 @@ import sys
 from cliff import command
 from cliff import lister
 from cliff import show
+
+import iso8601
 
 from gnocchiclient import utils
 
@@ -35,7 +36,7 @@ class CliMetricWithResourceID(command.Command):
 
 
 class CliMetricList(lister.Lister):
-    """List metrics"""
+    """List metrics."""
 
     COLS = ('id', 'archive_policy/name', 'name', 'unit', 'resource_id')
 
@@ -62,7 +63,7 @@ class CliMetricList(lister.Lister):
 
 
 class DeprecatedCliMetricList(CliMetricList):
-    """Deprecated: List metrics"""
+    """Deprecated: List metrics."""
 
     def take_action(self, parsed_args):
         LOG_DEP.warning('This command has been deprecated. '
@@ -71,7 +72,7 @@ class DeprecatedCliMetricList(CliMetricList):
 
 
 class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
-    """Show a metric"""
+    """Show a metric."""
 
     def get_parser(self, prog_name):
         parser = super(CliMetricShow, self).get_parser(prog_name)
@@ -92,7 +93,7 @@ class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
 
 
 class DeprecatedCliMetricShow(CliMetricShow):
-    """Deprecated: Show a metric"""
+    """Deprecated: Show a metric."""
 
     def take_action(self, parsed_args):
         LOG_DEP.warning('This command has been deprecated. '
@@ -110,7 +111,7 @@ class CliMetricCreateBase(show.ShowOne, CliMetricWithResourceID):
 
 
 class CliMetricCreate(CliMetricCreateBase):
-    """Create a metric"""
+    """Create a metric."""
 
     def get_parser(self, prog_name):
         parser = super(CliMetricCreate, self).get_parser(prog_name)
@@ -138,7 +139,7 @@ class CliMetricCreate(CliMetricCreateBase):
 
 
 class DeprecatedCliMetricCreate(CliMetricCreate):
-    """Deprecated: Create a metric"""
+    """Deprecated: Create a metric."""
 
     def take_action(self, parsed_args):
         LOG_DEP.warning('This command has been deprecated. '
@@ -147,7 +148,7 @@ class DeprecatedCliMetricCreate(CliMetricCreate):
 
 
 class CliMetricDelete(CliMetricWithResourceID):
-    """Delete a metric"""
+    """Delete a metric."""
 
     def get_parser(self, prog_name):
         parser = super(CliMetricDelete, self).get_parser(prog_name)
@@ -162,7 +163,7 @@ class CliMetricDelete(CliMetricWithResourceID):
 
 
 class DeprecatedCliMetricDelete(CliMetricDelete):
-    """Deprecated: Delete a metric"""
+    """Deprecated: Delete a metric."""
 
     def take_action(self, parsed_args):
         LOG_DEP.warning('This command has been deprecated. '
@@ -181,7 +182,8 @@ class CliMeasuresReturn(lister.Lister):
     @staticmethod
     def format_measures_with_tz(parsed_args, measures):
         if parsed_args.utc:
-            t = lambda x: x
+            def t(x):
+                return x
         else:
             t = utils.dt_to_localtz
         return [(t(dt).isoformat(), g, v) for dt, g, v in measures]
@@ -189,7 +191,7 @@ class CliMeasuresReturn(lister.Lister):
 
 class CliMeasuresShow(CliMetricWithResourceID, CliMeasuresReturn,
                       lister.Lister):
-    """Get measurements of a metric"""
+    """Get measurements of a metric."""
 
     COLS = ('timestamp', 'granularity', 'value')
 
@@ -236,7 +238,7 @@ class CliMeasuresAddBase(CliMetricWithResourceID):
 
 
 class CliMeasuresAdd(CliMeasuresAddBase):
-    """Add measurements to a metric"""
+    """Add measurements to a metric."""
 
     def measure(self, measure):
         timestamp, __, value = measure.rpartition("@")
@@ -301,7 +303,7 @@ class CliResourcesMetricsMeasuresBatch(CliMeasuresBatch):
 
 
 class CliMeasuresAggregation(CliMeasuresReturn):
-    """Get measurements of aggregated metrics"""
+    """Get measurements of aggregated metrics."""
 
     COLS = ('timestamp', 'granularity', 'value')
 

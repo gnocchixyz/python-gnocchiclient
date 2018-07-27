@@ -24,7 +24,7 @@ API_VERSIONS = {
 
 
 def make_client(instance):
-    """Returns a metrics service client."""
+    """Return a metrics service client."""
     version = instance._api_version[API_NAME]
     try:
         version = int(version)
@@ -45,7 +45,7 @@ def make_client(instance):
 
 
 def build_option_parser(parser):
-    """Hook to add global options."""
+    """Add global options to the parser."""
     parser.add_argument(
         '--os-metrics-api-version',
         metavar='<metrics-api-version>',
