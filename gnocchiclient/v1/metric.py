@@ -52,6 +52,10 @@ class MetricManager(base.Manager):
             metrics.extend(page.json())
             if limit is None or len(metrics) < limit:
                 page_url = page.links.get("next", {'url': None})['url']
+                if page_url and "?" in page_url:
+                    # NOTE(hyang): Regenerate with query string
+                    page_url = "%s?%s" % (self.metric_url[:-1],
+                                          page_url.split('?')[1])
             else:
                 break
         return metrics
