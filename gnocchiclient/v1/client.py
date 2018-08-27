@@ -31,12 +31,12 @@ class Client(object):
     """Client for the Gnocchi v1 API.
 
     :param session: keystoneauth1 session
-    :type session: :py:class:`keystoneauth1.session.Session` (optional)
+    :type session: py:class:`keystoneauth1.session.Session` (optional)
     :param adapter_options: options to pass to
-                            :py:class:`keystoneauth1.adapter.Adapter`
+                            py:class:`keystoneauth1.adapter.Adapter`
     :type adapter_options: dict (optional)
     :param session_options: options to pass to
-                            :py:class:`keystoneauth1.session.Session`
+                            py:class:`keystoneauth1.session.Session`
     :type session_options: dict (optional)
     """
 
