@@ -50,7 +50,7 @@ class CliArchivePolicyShow(show.ShowOne):
 
 
 def archive_policy_definition(string):
-    parts = string.split(",")
+    parts = string.replace(" ", "").split(",")
     defs = {}
     for part in parts:
         attr, __, value = part.partition(":")
