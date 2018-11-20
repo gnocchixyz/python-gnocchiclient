@@ -62,15 +62,6 @@ class CliMetricList(lister.Lister):
         return utils.list2cols(self.COLS, metrics)
 
 
-class DeprecatedCliMetricList(CliMetricList):
-    """Deprecated: List metrics."""
-
-    def take_action(self, parsed_args):
-        LOG_DEP.warning('This command has been deprecated. '
-                        'Please use "metric list" instead.')
-        return super(DeprecatedCliMetricList, self).take_action(parsed_args)
-
-
 class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
     """Show a metric."""
 
@@ -90,15 +81,6 @@ class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
         del metric['created_by_project_id']
         utils.format_resource_for_metric(metric)
         return self.dict2columns(metric)
-
-
-class DeprecatedCliMetricShow(CliMetricShow):
-    """Deprecated: Show a metric."""
-
-    def take_action(self, parsed_args):
-        LOG_DEP.warning('This command has been deprecated. '
-                        'Please use "metric show" instead.')
-        return super(DeprecatedCliMetricShow, self).take_action(parsed_args)
 
 
 class CliMetricCreateBase(show.ShowOne, CliMetricWithResourceID):
@@ -138,15 +120,6 @@ class CliMetricCreate(CliMetricCreateBase):
         return self.dict2columns(metric)
 
 
-class DeprecatedCliMetricCreate(CliMetricCreate):
-    """Deprecated: Create a metric."""
-
-    def take_action(self, parsed_args):
-        LOG_DEP.warning('This command has been deprecated. '
-                        'Please use "metric create" instead.')
-        return super(DeprecatedCliMetricCreate, self).take_action(parsed_args)
-
-
 class CliMetricDelete(CliMetricWithResourceID):
     """Delete a metric."""
 
@@ -160,15 +133,6 @@ class CliMetricDelete(CliMetricWithResourceID):
         for metric in parsed_args.metric:
             utils.get_client(self).metric.delete(
                 metric=metric, resource_id=parsed_args.resource_id)
-
-
-class DeprecatedCliMetricDelete(CliMetricDelete):
-    """Deprecated: Delete a metric."""
-
-    def take_action(self, parsed_args):
-        LOG_DEP.warning('This command has been deprecated. '
-                        'Please use "metric delete" instead.')
-        return super(DeprecatedCliMetricDelete, self).take_action(parsed_args)
 
 
 class CliMeasuresReturn(lister.Lister):
