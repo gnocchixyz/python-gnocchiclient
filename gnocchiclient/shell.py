@@ -127,7 +127,7 @@ class GnocchiShell(app.App):
         # fix all the rc files of the world, workaround it here.
         if ("OS_PASSWORD" in os.environ and
                 "OS_AUTH_TYPE" not in os.environ):
-            os.environ.set("OS_AUTH_TYPE", "password")
+            os.environ["OS_AUTH_TYPE"] = "password"
 
         loading.register_session_argparse_arguments(parser=parser)
         plugin = loading.register_auth_argparse_arguments(
