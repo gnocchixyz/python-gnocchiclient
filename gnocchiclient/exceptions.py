@@ -251,7 +251,7 @@ def from_response(response, method=None):
                 desc = body.get('description')
                 if desc and isinstance(desc, six.text_type):
                     for enhanced_cls in enhanced_classes:
-                        if enhanced_cls.match.match(desc):
+                        if enhanced_cls.match.match(str(desc)):
                             cls = enhanced_cls
                             break
                 kwargs['message'] = desc
