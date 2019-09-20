@@ -198,10 +198,11 @@ class CliResourceCreate(show.ShowOne):
                 resource['metrics'][name] = value
             for metric in parsed_args.create_metric:
                 name, _, value = metric.partition(":")
-                if value is "":
-                    resource['metrics'][name] = {}
-                else:
+                if value:
                     resource['metrics'][name] = {'archive_policy_name': value}
+                else:
+                    resource['metrics'][name] = {}
+                    
 
         return resource
 
