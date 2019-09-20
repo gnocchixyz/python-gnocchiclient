@@ -202,8 +202,6 @@ class CliResourceCreate(show.ShowOne):
                     resource['metrics'][name] = {'archive_policy_name': value}
                 else:
                     resource['metrics'][name] = {}
-                    
-
         return resource
 
     def take_action(self, parsed_args):
