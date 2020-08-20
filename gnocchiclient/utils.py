@@ -38,15 +38,15 @@ def list2cols(cols, objs):
                   for o in objs]
 
 
-def format_string_list(l):
-    return ", ".join(l)
+def format_string_list(li):
+    return ", ".join(li)
 
 
-def format_dict_list(l):
+def format_dict_list(li):
     return "\n".join(
         "- " + ", ".join("%s: %s" % (k, v)
                          for k, v in elem.items())
-        for elem in l)
+        for elem in li)
 
 
 def format_dict_dict(value):
