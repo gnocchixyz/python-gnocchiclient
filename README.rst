@@ -16,6 +16,6 @@ module), and a ``command-line script`` (installed as ```gnocchi``). Each
 implements the entire Gnocchi API.
 
 * Free software: Apache license
-* Documentation: http://gnocchi.xyz/gnocchiclient
+* Documentation: http://gnocchi.osci.io/gnocchiclient
 * Source: https://github.com/gnocchixyz/python-gnocchiclient
 * Bugs: https://github.com/gnocchixyz/python-gnocchiclient/issues

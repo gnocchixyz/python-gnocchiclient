@@ -38,3 +38,4 @@ def setup(app):
     app.add_directive('autodoc-gnocchi', GnocchiAutoDocDirective)
     app.add_config_value('autoprogram_cliff_application', 'gnocchi', True)
     app.add_config_value('autoprogram_cliff_ignored', ['--help'], True)
+    app.add_config_value('autoprogram_cliff_app_dist_name', None, True)

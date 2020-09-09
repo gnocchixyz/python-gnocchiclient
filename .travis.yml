@@ -9,9 +9,8 @@ cache:
     - ~/.cache/pip
 env:
   - TARGET: pep8
-  - TARGET: py27
   - TARGET: py37
-  - TARGET: docs-gnocchi.xyz
+  - TARGET: docs-gnocchi-web
 
 before_script:
   # Only run if this is a pull-request
