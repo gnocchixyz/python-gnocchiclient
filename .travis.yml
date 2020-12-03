@@ -7,7 +7,7 @@ cache:
     - ~/.cache/pip
 env:
   - TARGET: pep8
-  - TARGET: py37
+  - TARGET: py36
   - TARGET: docs-gnocchi-web
 
 before_script:
