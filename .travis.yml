@@ -13,7 +13,7 @@ env:
 before_script:
   # Only run if this is a pull-request
   - if \[ "$TRAVIS_PULL_REQUEST" != "false" -o  -n "$TRAVIS_TAG" \]; then
-      ./tools/install_deps.sh
+      ./tools/install_deps.sh ;
     fi
 script:
   # Only run if this is a pull-request
