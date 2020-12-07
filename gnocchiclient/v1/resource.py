@@ -158,7 +158,7 @@ class ResourceManager(base.Manager):
 
         See Gnocchi REST API documentation for the format
         of *query dictionary*
-        http://gnocchi.xyz/rest.html#searching-for-resources
+        http://gnocchi.osci.io/rest.html#searching-for-resources
         """
         query = query or {}
         params = utils.build_pagination_options(

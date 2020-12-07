@@ -16,9 +16,9 @@ This is a client for `Gnocchi`_. There's :doc:`a Python API <api>` (the
     concepts. By understanding the concepts this library and client should make
     more sense.
 
-    __ http://gnocchi.xyz
+    __ http://gnocchi.osci.io
 
-.. _Gnocchi: http://gnocchi.xyz
+.. _Gnocchi: http://gnocchi.osci.io
 
 Contents:
 
