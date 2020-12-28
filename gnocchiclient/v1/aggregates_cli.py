@@ -42,7 +42,16 @@ class CliAggregates(lister.Lister):
         parser.add_argument("--fill",
                             help=("Value to use when backfilling timestamps "
                                   "with missing values in a subset of series. "
-                                  "Value should be a float or 'null'."))
+                                  "Value should be a float or 'null'.")),
+        parser.add_argument("--use-history", default=False,
+                            help=("Indicates if Gnocchi server should respond "
+                                  "with the resource tags history for the "
+                                  "aggregation query. If set to `False`, only "
+                                  "the latest tag values will be returned. "
+                                  "Otherwise, the measures will be split "
+                                  "proportionally if a tag has been changed "
+                                  "in the `granularity` requested.")
+                            )
         return parser
 
     def take_action(self, parsed_args):
@@ -56,6 +65,7 @@ class CliAggregates(lister.Lister):
             needed_overlap=parsed_args.needed_overlap,
             groupby=parsed_args.groupby,
             fill=parsed_args.fill,
+            use_history=parsed_args.use_history
         )
 
         if parsed_args.search and parsed_args.groupby:

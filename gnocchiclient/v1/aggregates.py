@@ -24,7 +24,8 @@ from gnocchiclient.v1 import base
 class AggregatesManager(base.Manager):
     def fetch(self, operations, search=None,
               resource_type='generic', start=None, stop=None, granularity=None,
-              needed_overlap=None, groupby=None, fill=None, details=False):
+              needed_overlap=None, groupby=None, fill=None, details=False,
+              use_history=False):
         """Get measurements of an aggregated metrics.
 
         :param operations: operations
@@ -44,6 +45,10 @@ class AggregatesManager(base.Manager):
         :param details: also returns the list of metrics or resources
                         associated to the operations
         :type details: boolean
+        :param use_history: indicates if Gnocchi server must include in the
+                            response the tag history for resources. The
+                            default value is `False`.
+        :type use_history: boolean
 
         See Gnocchi REST API documentation for the format
         of *query dictionary*
@@ -65,6 +70,8 @@ class AggregatesManager(base.Manager):
             data["search"] = search
             data["resource_type"] = resource_type
             params["groupby"] = groupby
+
+        params['use_history'] = use_history
 
         aggregates = self._post("v1/aggregates?%s" % (
             utils.dict_to_querystring(params)),
