@@ -29,7 +29,9 @@ sudo apt-get install -qy \
         ceph \
         libsnappy-dev \
         libprotobuf-dev \
-        redis-server
+        redis-server \
+	node-gyp \
+        nodejs-dev
 
 sudo rm -rf /var/lib/apt/lists/*
 
