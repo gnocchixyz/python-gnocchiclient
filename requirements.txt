@@ -4,7 +4,7 @@
 
 pbr>=1.4
 cliff>=2.10 # Apache-2.0
-ujson
+ujson>=2.0.3
 keystoneauth1>=2.0.0
 six
 futurist
