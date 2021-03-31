@@ -194,7 +194,7 @@ class GnocchiShell(app.App):
         if err and isinstance(err, exceptions.HttpError):
             try:
                 error = err.response.json()
-            except Exception:
+            except Exception:  # noqa
                 pass
             else:
                 if 'description' in error:

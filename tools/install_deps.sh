@@ -30,6 +30,7 @@ sudo apt-get install -qy \
         libsnappy-dev \
         libprotobuf-dev \
         redis-server \
+	libssl1.0-dev \
 	node-gyp \
         nodejs-dev
 

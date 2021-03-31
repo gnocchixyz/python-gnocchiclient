@@ -116,7 +116,7 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
                 result, latency = f.result()
                 results.append(result)
                 latencies.append(latency)
-            except Exception as e:
+            except Exception as e:  # noqa
                 LOG.error("Error with %s metric: %s", (verb, e))
         latencies = sorted(latencies)
         return results, runtime, {
