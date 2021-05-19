@@ -41,9 +41,17 @@ class ResourceManager(base.Manager):
         """
         params = utils.build_pagination_options(
             details, history, limit, marker, sorts)
-        url = "%s%s?%s" % (self.url, resource_type,
-                           utils.dict_to_querystring(params))
-        return self._get(url).json()
+        resources = []
+        page_url = "%s%s?%s" % (self.url, resource_type,
+                                utils.dict_to_querystring(params))
+        while page_url:
+            page = self._get(page_url)
+            resources.extend(page.json())
+            if limit is None or len(resources) < limit:
+                page_url = page.links.get("next", {'url': None})['url']
+            else:
+                break
+        return resources
 
     def get(self, resource_type, resource_id, history=False):
         """Get a resource.
@@ -164,14 +172,23 @@ class ResourceManager(base.Manager):
         params = utils.build_pagination_options(
             details, history, limit, marker, sorts)
         url = "v1/search/resource/%s?%%s" % resource_type
+        resources = []
 
         if isinstance(query, dict):
-            return self._post(
-                url % utils.dict_to_querystring(params),
-                headers={'Content-Type': "application/json"},
-                data=ujson.dumps(query)).json()
+            page_url = url % utils.dict_to_querystring(params)
+            data = ujson.dumps(query)
+        else:
+            params['filter'] = query
+            page_url = url % utils.dict_to_querystring(params)
+            data = None
 
-        params['filter'] = query
-        return self._post(
-            url % utils.dict_to_querystring(params),
-            headers={'Content-Type': "application/json"}).json()
+        while page_url:
+            page = self._post(
+                page_url, headers={'Content-Type': "application/json"},
+                data=data)
+            resources.extend(page.json())
+            if limit is None or len(resources) < limit:
+                page_url = page.links.get("next", {'url': None})['url']
+            else:
+                break
+        return resources
