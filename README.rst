@@ -2,10 +2,6 @@
 gnocchiclient
 =============
 
-.. image:: https://travis-ci.org/gnocchixyz/python-gnocchiclient.png?branch=master
-    :target: https://travis-ci.org/gnocchixyz/python-gnocchiclient
-    :alt: Build Status
-
 .. image:: https://badge.fury.io/py/gnocchiclient.svg
     :target: https://badge.fury.io/py/gnocchiclient
 

@@ -1,23 +1,34 @@
+queue_rules:
+  - name: default
+    conditions:
+    - check-success=test (docs-gnocchi-web)
+    - check-success=test (pep8)
+    - check-success=test (py36)
+
 pull_request_rules:
-  - name: automatic merge for master
+  - name: automatic merge
     actions:
-      merge:
-        method: rebase
-        rebase_fallback: merge
-        strict: true
+      queue:
+        method: merge
+        name: default
     conditions:
     - label!=work-in-progress
     - '#approved-reviews-by>=1'
-    - status-success=Travis CI - Pull Request
-    - base=master
-  - name: automatic merge for stable branches
+    - check-success=test (docs-gnocchi-web)
+    - check-success=test (pep8)
+    - check-success=test (py36)
+
+  - name: automatic merge backports from Mergify
     actions:
-      merge:
-        method: rebase
-        rebase_fallback: merge
-        strict: true    
+      queue:
+        method: merge
+        name: default
     conditions:
+    - base~=^stable/.*
     - label!=work-in-progress
-    - '#approved-reviews-by>=1'
-    - status-success=Travis CI - Pull Request
-    - base~=^stable/
+    - author=mergify[bot]
+
+  - name: dismiss reviews on additional commit
+    actions:
+      dismiss_reviews: {}
+    conditions: []
