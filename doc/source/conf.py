@@ -11,7 +11,7 @@
 # serve to show the default.
 
 import datetime
-import subprocess
+import pkg_resources
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -51,9 +51,8 @@ copyright = u'%s, The Gnocchi Developers' % datetime.date.today().year
 # built documents.
 #
 # The short X.Y version.
-version = subprocess.Popen(['sh', '-c', 'cd ../..; python setup.py --version'],
-                           stdout=subprocess.PIPE).stdout.read()
-version = version.strip()
+version = pkg_resources.get_distribution('gnocchiclient').version
+
 # The full version, including alpha/beta/rc tags.
 release = version
 
