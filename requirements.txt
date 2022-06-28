@@ -9,6 +9,5 @@ keystoneauth1>=2.0.0
 six
 futurist
 iso8601
-monotonic
 python-dateutil
 debtcollector

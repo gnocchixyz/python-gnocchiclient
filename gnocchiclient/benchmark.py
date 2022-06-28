@@ -27,8 +27,6 @@ import futurist
 
 import iso8601
 
-from monotonic import monotonic as now  # noqa
-
 import six.moves
 
 from gnocchiclient import utils
@@ -64,10 +62,10 @@ def _positive_non_zero_int(argument_value):
 
 class StopWatch(object):
     def __init__(self):
-        self.started_at = now()
+        self.started_at = time.monotonic()
 
     def elapsed(self):
-        return max(0.0, now() - self.started_at)
+        return max(0.0, time.monotonic() - self.started_at)
 
 
 def measure_job(fn, *args, **kwargs):
