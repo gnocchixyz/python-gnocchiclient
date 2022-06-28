@@ -20,10 +20,6 @@ pip-log.txt
 # Sphinx
 doc/build
 
-# pbr generates these
-AUTHORS
-ChangeLog
-
 # generated docs
 doc/source/api
 doc/source/gnocchi.rst
