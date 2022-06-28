@@ -4,6 +4,8 @@ queue_rules:
     - check-success=test (docs-gnocchi-web)
     - check-success=test (pep8)
     - check-success=test (py36)
+    - check-success=test (py38)
+    - check-success=test (py39)
 
 pull_request_rules:
   - name: automatic merge
@@ -17,6 +19,8 @@ pull_request_rules:
     - check-success=test (docs-gnocchi-web)
     - check-success=test (pep8)
     - check-success=test (py36)
+    - check-success=test (py38)
+    - check-success=test (py39)
 
   - name: automatic merge backports from Mergify
     actions:
