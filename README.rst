@@ -7,8 +7,8 @@ gnocchiclient
 
 Python bindings to the Gnocchi API
 
-This is a client for Gnocchi API. There's a Python API (the ``gnocchiclient```
-module), and a ``command-line script`` (installed as ```gnocchi``). Each
+This is a client for Gnocchi API. There's a Python API (the ``gnocchiclient``
+module), and a ``command-line script`` (installed as ``gnocchi``). Each
 implements the entire Gnocchi API.
 
 * Free software: Apache license
