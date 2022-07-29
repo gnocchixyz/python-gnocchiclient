@@ -106,6 +106,5 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
                               params="delete test",
                               fail_ok=True, merge_stderr=True,
                               has_output=False)
-        self.assertEqual(
-            "Archive policy rule test does not exist (HTTP 404)\n",
-            result)
+        self.assertIn("HTTP 404", result)
+        self.assertIn("Archive policy rule test does not exist", result)

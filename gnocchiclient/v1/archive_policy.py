@@ -63,4 +63,4 @@ class ArchivePolicyManager(base.Manager):
         :param name: Name of the archive policy
         :type name: str
         """
-        self._delete(self.url + name)
+        self._delete(self.url + name, headers={"Accept": None})

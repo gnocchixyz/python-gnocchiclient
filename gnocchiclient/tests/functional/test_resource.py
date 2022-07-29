@@ -164,9 +164,8 @@ class ResourceClientTest(base.ClientTestBase):
                               params="delete %s" % self.RESOURCE_ID,
                               fail_ok=True, merge_stderr=True,
                               has_output=False)
-        self.assertEqual(
-            "Resource %s does not exist (HTTP 404)\n" % self.RESOURCE_ID,
-            result)
+        self.assertIn("HTTP 404", result)
+        self.assertIn("Resource %s does not exist" % self.RESOURCE_ID, result)
 
         # Create and Batch Delete
         result1 = self.gnocchi(

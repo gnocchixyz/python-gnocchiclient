@@ -126,7 +126,8 @@ class ResourceManager(base.Manager):
         :param resource_id: ID of the resource
         :type resource_id: str
         """
-        self._delete(self.url + "generic/" + resource_id)
+        self._delete(self.url + "generic/" + resource_id,
+                     headers={"Accept": None})
 
     def batch_delete(self, query, resource_type="generic"):
         """Delete a batch of resources based on attribute values.

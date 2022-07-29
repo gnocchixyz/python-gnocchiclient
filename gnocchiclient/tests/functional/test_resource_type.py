@@ -92,9 +92,10 @@ class ResourceTypeClientTest(base.ClientTestBase):
                               params="delete %s" % self.RESOURCE_TYPE,
                               fail_ok=True, merge_stderr=True,
                               has_output=False)
-        self.assertEqual(
-            "Resource type %s does not exist (HTTP 404)\n"
-            % self.RESOURCE_TYPE,
+
+        self.assertIn("HTTP 404", result)
+        self.assertIn(
+            "Resource type %s does not exist" % self.RESOURCE_TYPE,
             result)
 
         # SHOW AGAIN

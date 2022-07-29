@@ -314,9 +314,8 @@ class MetricClientTest(base.ClientTestBase):
         result = self.gnocchi('metric', params="delete %s" % metric["id"],
                               fail_ok=True, merge_stderr=True,
                               has_output=False)
-        self.assertEqual(
-            "Metric %s does not exist (HTTP 404)\n" % metric["id"],
-            result)
+        self.assertIn("HTTP 404", result)
+        self.assertIn("Metric %s does not exist" % metric["id"], result)
 
     def test_metric_by_name_scenario(self):
         # PREPARE REQUIREMENT
@@ -548,9 +547,8 @@ class MetricClientTest(base.ClientTestBase):
                               params="delete -r metric-res " + metric_name,
                               fail_ok=True, merge_stderr=True,
                               has_output=False)
-        self.assertEqual(
-            "Metric " + metric_name + " does not exist (HTTP 404)\n",
-            result)
+        self.assertIn("HTTP 404", result)
+        self.assertIn("Metric %s does not exist" % metric_name, result)
 
         # GET RESOURCE ID
         result = self.gnocchi(

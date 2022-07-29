@@ -187,7 +187,7 @@ class MetricManager(base.Manager):
             url = self.metric_url + metric
         else:
             url = self.resource_url % resource_id + metric
-        self._delete(url)
+        self._delete(url, headers={"Accept": None})
 
     def add_measures(self, metric, measures, resource_id=None):
         """Add measurements to a metric.

@@ -49,7 +49,7 @@ class ResourceTypeManager(base.Manager):
         :param resource_type: Resource type
         :type resource_type: dict
         """
-        self._delete(self.url + name)
+        self._delete(self.url + name, headers={"Accept": None})
 
     def update(self, name, operations):
         """Update a resource type.
