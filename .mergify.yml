@@ -2,6 +2,7 @@ queue_rules:
   - name: default
     conditions:
     - check-success=test (docs-gnocchi-web)
+    - check-success=test (build)
     - check-success=test (pep8)
     - check-success=test (py36)
     - check-success=test (py38)
@@ -17,6 +18,7 @@ pull_request_rules:
     - label!=work-in-progress
     - '#approved-reviews-by>=1'
     - check-success=test (docs-gnocchi-web)
+    - check-success=test (build)
     - check-success=test (pep8)
     - check-success=test (py36)
     - check-success=test (py38)

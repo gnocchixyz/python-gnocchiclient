@@ -13,17 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# THIS FILE IS MANAGED BY THE GLOBAL REQUIREMENTS REPO - DO NOT EDIT
 import setuptools
 
-# In python < 2.7.4, a lazy loading of package `pbr` will break
-# setuptools if some other modules registered functions in `atexit`.
-# solution from: http://bugs.python.org/issue15881#msg170215
+
+cmdclass = {}
+
 try:
-    import multiprocessing  # noqa
+    from sphinx import setup_command
+    cmdclass['build_sphinx'] = setup_command.BuildDoc
 except ImportError:
     pass
 
+
 setuptools.setup(
-    setup_requires=['pbr'],
-    pbr=True)
+    cmdclass=cmdclass,
+    py_modules=[],
+)

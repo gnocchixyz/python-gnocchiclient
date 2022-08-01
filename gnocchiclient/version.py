@@ -12,7 +12,11 @@
 #    under the License.
 #
 
-import pbr.version
+import pkg_resources
 
 
-__version__ = pbr.version.VersionInfo('gnocchiclient').version_string()
+try:
+    __version__ = pkg_resources.get_distribution('gnocchiclient').version
+except pkg_resources.DistributionNotFound:
+    # package is not installed
+    pass

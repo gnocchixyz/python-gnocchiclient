@@ -12,6 +12,7 @@ jobs:
       matrix:
         env:
           - docs-gnocchi-web
+          - build
           - pep8
           - py36
           - py38
