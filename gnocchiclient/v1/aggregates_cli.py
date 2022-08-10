@@ -55,6 +55,7 @@ class CliAggregates(lister.Lister):
             granularity=parsed_args.granularity,
             needed_overlap=parsed_args.needed_overlap,
             groupby=parsed_args.groupby,
+            fill=parsed_args.fill,
         )
 
         if parsed_args.search and parsed_args.groupby:
