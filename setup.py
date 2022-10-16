@@ -26,6 +26,7 @@ except ImportError:
 
 
 setuptools.setup(
+    packages=setuptools.find_packages(),
     cmdclass=cmdclass,
     py_modules=[],
 )
