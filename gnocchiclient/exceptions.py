@@ -99,7 +99,7 @@ class NotFound(ClientException):
 
 class MetricNotFound(NotFound):
     message = "Metric not found"
-    match = re.compile("Metric .* does not exist")
+    match = re.compile("Metric .* does not exist|Metrics not found")
 
 
 class ResourceNotFound(NotFound):
@@ -250,12 +250,17 @@ def from_response(response, method=None):
             if 'description' in body:
                 # Gnocchi json
                 desc = body.get('description')
-                if desc and isinstance(desc, six.text_type):
-                    for enhanced_cls in enhanced_classes:
-                        if enhanced_cls.match.match(desc):
-                            cls = enhanced_cls
-                            break
-                kwargs['message'] = desc
+                error_description = None
+                if isinstance(desc, six.text_type) or isinstance(desc, str):
+                    error_description = desc
+                if isinstance(desc, dict):
+                    error_description = desc.get('cause')
+
+                for enhanced_cls in enhanced_classes:
+                    if enhanced_cls.match.match(error_description):
+                        cls = enhanced_cls
+                        break
+                kwargs['message'] = error_description
             elif isinstance(body, dict) and isinstance(body.get("error"),
                                                        dict):
                 # Keystone json
