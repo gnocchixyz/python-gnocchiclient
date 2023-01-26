@@ -99,7 +99,7 @@ class NotFound(ClientException):
 
 class MetricNotFound(NotFound):
     message = "Metric not found"
-    match = re.compile("Metric .* does not exist|Metrics not found")
+    match = re.compile("Metric .* does not exist")
 
 
 class ResourceNotFound(NotFound):
