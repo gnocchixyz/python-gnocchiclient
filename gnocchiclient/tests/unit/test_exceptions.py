@@ -57,6 +57,26 @@ class ExceptionsTest(unittest.TestCase):
         exc = exceptions.from_response(r)
         self.assertIsInstance(exc, exceptions.ResourceTypeNotFound)
 
+    def test_metric_not_found_description_string(self):
+        r = models.Response()
+        r.status_code = 404
+        r.headers['Content-Type'] = "application/json"
+        r._content = json.dumps(
+            {"description": "Metric XXXX does not exist"}
+        ).encode('utf-8')
+        exc = exceptions.from_response(r)
+        self.assertIsInstance(exc, exceptions.MetricNotFound)
+
+    def test_metric_not_found_description_dictionary_with_data(self):
+        r = models.Response()
+        r.status_code = 404
+        r.headers['Content-Type'] = "application/json"
+        r._content = json.dumps(
+            {"description": {'cause': "Metric XXXX does not exist"}}
+        ).encode('utf-8')
+        exc = exceptions.from_response(r)
+        self.assertIsInstance(exc, exceptions.MetricNotFound)
+
     def test_from_response_keystone_401(self):
         r = models.Response()
         r.status_code = 401
