@@ -26,3 +26,9 @@ doc/source/gnocchi.rst
 
 # pytest cache
 .cache
+
+# venv of tests
+venv
+
+# ignore IDE folder
+.idea
