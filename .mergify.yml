@@ -6,6 +6,7 @@ queue_rules:
     - check-success=test (pep8)
     - check-success=test (py38)
     - check-success=test (py39)
+    - check-success=test (py311)
 
 pull_request_rules:
   - name: automatic merge
@@ -21,6 +22,7 @@ pull_request_rules:
     - check-success=test (pep8)
     - check-success=test (py38)
     - check-success=test (py39)
+    - check-success=test (py311)
 
   - name: automatic merge backports from Mergify
     actions:
