@@ -10,9 +10,6 @@ sudo apt-get update -y && sudo apt-get install -qy \
         python3 \
         python3-dev \
         python3-pip \
-        python3.6 \
-        python3.6-dev \
-        python3.6-distutils \
         python3.9 \
         python3.9-dev \
 
@@ -23,4 +20,3 @@ sudo update-locale
 sudo locale-gen $LANG
 
 sudo python3 -m pip install -U pip tox virtualenv
-sudo python3.6 -m pip install -U pip tox virtualenv

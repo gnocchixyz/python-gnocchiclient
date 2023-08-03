@@ -14,7 +14,6 @@ jobs:
           - docs-gnocchi-web
           - build
           - pep8
-          - py36
           - py38
           - py39
     steps:
