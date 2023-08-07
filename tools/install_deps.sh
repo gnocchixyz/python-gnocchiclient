@@ -12,6 +12,7 @@ sudo apt-get update -y && sudo apt-get install -qy \
         python3-pip \
         python3.9 \
         python3.9-dev \
+        python3.9-distutils \
         python3.11 \
         python3.11-dev
 
