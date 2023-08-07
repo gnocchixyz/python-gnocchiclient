@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     strategy:
       matrix:
@@ -14,7 +14,6 @@ jobs:
           - docs-gnocchi-web
           - build
           - pep8
-          - py38
           - py39
           - py311
     steps:
