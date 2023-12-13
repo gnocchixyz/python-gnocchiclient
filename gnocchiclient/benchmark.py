@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 import argparse
+import copyreg
 import datetime
 import functools
 import itertools
@@ -27,8 +28,6 @@ import futurist
 
 import iso8601
 
-import six.moves
-
 from gnocchiclient import utils
 from gnocchiclient.v1 import metric_cli
 
@@ -43,7 +42,7 @@ def _pickle_method(m):
         return getattr, (m.im_self, m.im_func.func_name)
 
 
-six.moves.copyreg.pickle(types.MethodType, _pickle_method)
+copyreg.pickle(types.MethodType, _pickle_method)
 
 
 def _positive_non_zero_int(argument_value):
@@ -60,7 +59,7 @@ def _positive_non_zero_int(argument_value):
     return value
 
 
-class StopWatch(object):
+class StopWatch:
     def __init__(self):
         self.started_at = time.monotonic()
 
@@ -79,7 +78,7 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
         self.sw = StopWatch()
         self.times = times
         return [self.submit(measure_job, fn, *args, **kwargs)
-                for i in six.moves.range(times)]
+                for i in range(times)]
 
     def map_job(self, fn, iterable, **kwargs):
         r = []
@@ -283,13 +282,13 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                 "for the number of points")
 
         random_values = (random.randint(- 2 ** 32, 2 ** 32)
-                         for _ in six.moves.range(count))
+                         for _ in range(count))
         measures = [{"timestamp": ts, "value": v}
                     for ts, v
-                    in six.moves.zip(
-                        six.moves.range(start,
-                                        end,
-                                        (end - start) // count),
+                    in zip(
+                        range(start,
+                              end,
+                              (end - start) // count),
                         random_values)]
 
         times = parsed_args.count // parsed_args.batch
