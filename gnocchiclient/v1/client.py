@@ -27,7 +27,7 @@ from gnocchiclient.v1 import resource_type
 from gnocchiclient.v1 import status
 
 
-class Client(object):
+class Client:
     """Client for the Gnocchi v1 API.
 
     :param session: keystoneauth1 session

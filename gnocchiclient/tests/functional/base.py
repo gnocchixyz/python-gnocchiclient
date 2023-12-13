@@ -16,8 +16,6 @@ import subprocess
 import time
 import unittest
 
-import six
-
 
 class ClientTestBase(unittest.TestCase):
     """Base class for gnocchiclient tests.
@@ -57,8 +55,6 @@ class ClientTestBase(unittest.TestCase):
 
         cmd = ' '.join([os.path.join(self.cli_dir, binary),
                         flags, action, params, fmt])
-        if six.PY2:
-            cmd = cmd.encode('utf-8')
         cmd = shlex.split(cmd)
         result = ''
         result_err = ''
@@ -73,8 +69,6 @@ class ClientTestBase(unittest.TestCase):
                                cmd,
                                result,
                                result_err)
-        if not six.PY2:
-            result = os.fsdecode(result)
 
         if not has_output and not fail_ok and action != 'help':
             self.assertEqual("", result)
