@@ -11,8 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import distutils.util
-
 from cliff import command
 from cliff import lister
 from cliff import show
@@ -174,7 +172,7 @@ class CliResourceCreate(show.ShowOne):
                 if attr_type == "number":
                     value = float(value)
                 elif attr_type == "bool":
-                    value = bool(distutils.util.strtobool(value))
+                    value = utils.str_to_bool(value)
                 resource[attr] = value
         if (parsed_args.add_metric or
            parsed_args.create_metric or

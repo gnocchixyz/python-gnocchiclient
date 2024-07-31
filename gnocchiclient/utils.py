@@ -164,3 +164,25 @@ def parse_date(s):
 
 def dt_to_localtz(d):
     return d.astimezone(LOCAL_TIMEZONE)
+
+
+def str_to_bool(val):
+    """Convert a string representation of truth to ``True`` or ``False``.
+
+    ``True`` values are ``y``, ``yes``, ``t``, ``true``, ``on``, and ``1``.
+    ``False`` values are ``n``, ``no``, ``f``, ``false``, ``off``, and ``0``.
+
+    :param val: Value to convert to a boolean.
+    :type val: str
+    :raises ValueError: If ``val`` is anything other than the allowed values.
+    :return: ``True`` if the value is a truthy value, otherwise ``False``.
+    :rtype: bool
+    """
+    val = str(val).lower()
+
+    if val in ("y", "yes", "t", "true", "on", "1"):
+        return True
+    elif val in ("n", "no", "f", "false", "off", "0"):
+        return False
+    else:
+        raise ValueError(f"Invalid truth value {val!r}")
