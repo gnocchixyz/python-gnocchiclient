@@ -11,8 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import distutils.util
-
 from cliff import command
 from cliff import lister
 from cliff import show
@@ -60,7 +58,7 @@ class CliResourceTypeCreate(show.ShowOne):
         if config:
             attrs["type"] = config.pop(0)
         if config:
-            attrs["required"] = bool(distutils.util.strtobool(config.pop(0)))
+            attrs["required"] = utils.str_to_bool(config.pop(0))
         while config:
             param, _, value = config.pop(0).partition("=")
             opts = attrs
