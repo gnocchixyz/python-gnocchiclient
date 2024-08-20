@@ -11,12 +11,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import urllib.parse
+
 from dateutil import tz
 
 import iso8601
-
-import six
-from six.moves.urllib import parse as urllib_parse
 
 
 def add_query_argument(cmd, parser, *args, **kwargs):
@@ -104,8 +103,8 @@ def dict_to_querystring(objs):
                 values = [values]
             strings.append("&".join(
                 ("%s=%s" % (k, v)
-                 for v in map(urllib_parse.quote,
-                              map(six.text_type, values)))))
+                 for v in map(urllib.parse.quote,
+                              map(str, values)))))
     return "&".join(strings)
 
 
