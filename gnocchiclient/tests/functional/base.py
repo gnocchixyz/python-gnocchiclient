@@ -69,6 +69,7 @@ class ClientTestBase(unittest.TestCase):
                                cmd,
                                result,
                                result_err)
+        result = result.decode('utf-8')
 
         if not has_output and not fail_ok and action != 'help':
             self.assertEqual("", result)
