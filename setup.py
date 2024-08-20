@@ -18,4 +18,5 @@ import setuptools
 
 setuptools.setup(
     packages=setuptools.find_packages(),
+    long_description=open('README.rst').read(),
 )
