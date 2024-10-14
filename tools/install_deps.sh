@@ -24,4 +24,5 @@ export LANG=en_US.UTF-8
 sudo update-locale
 sudo locale-gen $LANG
 
-sudo python3 -m pip install -U pip tox virtualenv
+sudo python3 -m venv /tmp/gnocchi-tox-env
+sudo /tmp/gnocchi-tox-env/bin/python3 -m pip install -U pip tox virtualenv

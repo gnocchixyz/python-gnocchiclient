@@ -24,4 +24,4 @@ jobs:
       - name: Install dependencies
         run: ./tools/install_deps.sh
       - name: Run tox
-        run: tox -e ${{ matrix.env }}
+        run: /tmp/gnocchi-tox-env/bin/tox -e ${{ matrix.env }}
