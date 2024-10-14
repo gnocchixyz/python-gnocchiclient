@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       matrix:
@@ -16,6 +16,7 @@ jobs:
           - pep8
           - py39
           - py311
+          - py312
     steps:
       - uses: actions/checkout@v4
         with:
