@@ -11,7 +11,7 @@
 # serve to show the default.
 
 import datetime
-import pkg_resources
+import importlib.metadata
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -51,7 +51,7 @@ copyright = u'%s, The Gnocchi Developers' % datetime.date.today().year
 # built documents.
 #
 # The short X.Y version.
-version = pkg_resources.get_distribution('gnocchiclient').version
+version = importlib.metadata.version('gnocchiclient')
 
 # The full version, including alpha/beta/rc tags.
 release = version

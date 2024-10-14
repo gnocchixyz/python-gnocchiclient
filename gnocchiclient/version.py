@@ -12,11 +12,11 @@
 #    under the License.
 #
 
-import pkg_resources
+import importlib.metadata
 
 
 try:
-    __version__ = pkg_resources.get_distribution('gnocchiclient').version
-except pkg_resources.DistributionNotFound:
+    __version__ = importlib.metadata.version('gnocchiclient')
+except importlib.metadata.PackageNotFoundError:
     # package is not installed
     pass
