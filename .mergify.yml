@@ -1,40 +1,42 @@
 queue_rules:
-  - name: default
-    conditions:
-    - check-success=test (docs-gnocchi-web)
-    - check-success=test (build)
-    - check-success=test (pep8)
-    - check-success=test (py38)
-    - check-success=test (py39)
-    - check-success=test (py311)
+  - name: duplicated default from automatic merge
+    queue_conditions:
+      - label!=work-in-progress
+      - '#approved-reviews-by>=1'
+      - check-success=test (docs-gnocchi-web)
+      - check-success=test (build)
+      - check-success=test (pep8)
+      - check-success=test (py38)
+      - check-success=test (py39)
+      - check-success=test (py311)
+    merge_conditions:
+      - check-success=test (docs-gnocchi-web)
+      - check-success=test (build)
+      - check-success=test (pep8)
+      - check-success=test (py38)
+      - check-success=test (py39)
+      - check-success=test (py311)
+    merge_method: merge
+  - name: duplicated default from automatic merge backports from Mergify
+    queue_conditions:
+      - base~=^stable/.*
+      - label!=work-in-progress
+      - author=mergify[bot]
+    merge_conditions:
+      - check-success=test (docs-gnocchi-web)
+      - check-success=test (build)
+      - check-success=test (pep8)
+      - check-success=test (py38)
+      - check-success=test (py39)
+      - check-success=test (py311)
+    merge_method: merge
 
 pull_request_rules:
-  - name: automatic merge
-    actions:
-      queue:
-        method: merge
-        name: default
-    conditions:
-    - label!=work-in-progress
-    - '#approved-reviews-by>=1'
-    - check-success=test (docs-gnocchi-web)
-    - check-success=test (build)
-    - check-success=test (pep8)
-    - check-success=test (py38)
-    - check-success=test (py39)
-    - check-success=test (py311)
-
-  - name: automatic merge backports from Mergify
-    actions:
-      queue:
-        method: merge
-        name: default
-    conditions:
-    - base~=^stable/.*
-    - label!=work-in-progress
-    - author=mergify[bot]
-
   - name: dismiss reviews on additional commit
     actions:
       dismiss_reviews: {}
     conditions: []
+  - name: automatic merge + automatic merge backports from Mergify
+    conditions: []
+    actions:
+      queue:
