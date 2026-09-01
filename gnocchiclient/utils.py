@@ -95,6 +95,21 @@ def dict_from_parsed_args(parsed_args, attrs):
     return d
 
 
+def encode_resource_id(resource_id):
+    """Percent-encode a resource id for use in a URL path segment.
+
+    Resource ids are free-form strings on the server side (anything that
+    is not a UUID gets hashed into one), and real-world ids carry
+    characters that mean something in a URL: Cinder pool names are
+    "<host>@<backend>#<pool>", so an unencoded id truncates at '#' and
+    the request lands on a different (nonexistent) resource.
+
+    ``safe=""`` so that a '/' is encoded too: quote() leaves it alone by
+    default, and in an id it would split the path segment.
+    """
+    return urllib.parse.quote(resource_id, safe="")
+
+
 def dict_to_querystring(objs):
     strings = []
     for k, values in sorted(objs.items()):
