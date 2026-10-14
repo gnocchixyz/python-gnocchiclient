@@ -120,6 +120,11 @@ class ArchivePolicyRuleNotFound(NotFound):
     match = re.compile("Archive policy rule .* does not exist")
 
 
+class AggregationMethodNotFound(NotFound):
+    message = "Aggregation method not found"
+    match = re.compile("Aggregation method does not exist for this metric")
+
+
 class MethodNotAllowed(ClientException):
     """HTTP 405 - Method Not Allowed."""
 
