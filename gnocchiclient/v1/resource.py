@@ -13,6 +13,8 @@
 
 import ujson
 
+from urllib import parse as urlparse
+
 from gnocchiclient import utils
 from gnocchiclient.v1 import base
 
@@ -64,7 +66,8 @@ class ResourceManager(base.Manager):
         :type history: bool
         """
         history = "/history" if history else ""
-        url = self.url + "%s/%s%s" % (resource_type, resource_id, history)
+        url = self.url + "%s/%s%s" % (
+            resource_type, urlparse.quote(resource_id), history)
         return self._get(url).json()
 
     def history(self, resource_type, resource_id, details=False,
@@ -88,7 +91,8 @@ class ResourceManager(base.Manager):
         """
         params = utils.build_pagination_options(details, False, limit, marker,
                                                 sorts)
-        url = "%s%s/%s/history?%s" % (self.url, resource_type, resource_id,
+        url = "%s%s/%s/history?%s" % (self.url, resource_type,
+                                      urlparse.quote(resource_id),
                                       utils.dict_to_querystring(params))
         return self._get(url).json()
 
@@ -116,7 +120,10 @@ class ResourceManager(base.Manager):
         :type resource: dict
         """
         return self._patch(
-            self.url + resource_type + "/" + resource_id,
+            (self.url
+             + resource_type
+             + "/"
+             + urlparse.quote(resource_id)),
             headers={'Content-Type': "application/json"},
             data=ujson.dumps(resource)).json()
 
@@ -126,7 +133,7 @@ class ResourceManager(base.Manager):
         :param resource_id: ID of the resource
         :type resource_id: str
         """
-        self._delete(self.url + "generic/" + resource_id)
+        self._delete(self.url + "generic/" + urlparse.quote(resource_id))
 
     def batch_delete(self, query, resource_type="generic"):
         """Delete a batch of resources based on attribute values.

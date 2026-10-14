@@ -17,7 +17,8 @@ from gnocchiclient.tests.functional import base
 
 class ResourceClientTest(base.ClientTestBase):
     RESOURCE_ID = str(uuid.uuid4())
-    RESOURCE_ID2 = "foo"
+    # NOTE(callumdickinson): Also tests URL escaping.
+    RESOURCE_ID2 = "foo%201"
     PROJECT_ID = str(uuid.uuid4())
 
     def test_help(self):
