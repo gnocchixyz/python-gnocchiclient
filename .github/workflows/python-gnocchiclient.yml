@@ -17,6 +17,8 @@ jobs:
           - py310
           - py311
           - py312
+          - py313
+          - py314
     steps:
       - uses: actions/checkout@v4
         with:
