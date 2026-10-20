@@ -16,6 +16,8 @@ sudo apt-get update -y && sudo apt-get install -qy \
         python3.11 \
         python3.11-dev \
         python3.11-distutils \
+	python3.13 \
+        python3.13-dev \
         tox
 
 sudo rm -rf /var/lib/apt/lists/*
