@@ -11,9 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import unittest
 from unittest import mock
-
-import testtools
 
 from gnocchiclient import utils
 from gnocchiclient.v1 import metric
@@ -25,7 +24,7 @@ POOL = "ceph-aa@hybrid-rep3#hybrid-rep3"
 ENCODED = "ceph-aa%40hybrid-rep3%23hybrid-rep3"
 
 
-class TestEncodeResourceId(testtools.TestCase):
+class TestEncodeResourceId(unittest.TestCase):
     def test_encode(self):
         self.assertEqual(ENCODED, utils.encode_resource_id(POOL))
         self.assertEqual("a-uuid-stays-as-is",
@@ -34,7 +33,7 @@ class TestEncodeResourceId(testtools.TestCase):
                          utils.encode_resource_id("with/slash"))
 
 
-class TestResourceUrls(testtools.TestCase):
+class TestResourceUrls(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.manager = resource.ResourceManager(mock.Mock())
@@ -72,7 +71,7 @@ class TestResourceUrls(testtools.TestCase):
                          m.call_args[0][0])
 
 
-class TestMetricUrls(testtools.TestCase):
+class TestMetricUrls(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.manager = metric.MetricManager(mock.Mock())
