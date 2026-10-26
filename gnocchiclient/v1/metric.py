@@ -77,7 +77,8 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric
         else:
-            url = (self.resource_url % resource_id) + metric
+            url = (self.resource_url %
+                   utils.encode_resource_id(resource_id)) + metric
         return self._get(url).json()
 
     # FIXME(jd): This is what create will be after debtcollector warnings have
@@ -114,7 +115,7 @@ class MetricManager(base.Manager):
                 "Metric name is required if resource_id is set")
 
         return self._post(
-            self.resource_url % resource_id,
+            self.resource_url % utils.encode_resource_id(resource_id),
             headers={'Content-Type': "application/json"},
             data=ujson.dumps({name: metric})).json()[0]
 
@@ -168,7 +169,7 @@ class MetricManager(base.Manager):
         del metric['resource_id']
         metric = {metric_name: metric}
         metric = self._post(
-            self.resource_url % resource_id,
+            self.resource_url % utils.encode_resource_id(resource_id),
             headers={'Content-Type': "application/json"},
             data=ujson.dumps(metric))
         return self.get(metric_name, resource_id)
@@ -186,7 +187,8 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric
         else:
-            url = self.resource_url % resource_id + metric
+            url = (self.resource_url %
+                   utils.encode_resource_id(resource_id)) + metric
         self._delete(url)
 
     def add_measures(self, metric, measures, resource_id=None):
@@ -204,7 +206,9 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric + "/measures"
         else:
-            url = self.resource_url % resource_id + metric + "/measures"
+            url = ((self.resource_url %
+                    utils.encode_resource_id(resource_id)) +
+                   metric + "/measures")
         return self._post(
             url, headers={'Content-Type': "application/json"},
             data=ujson.dumps(measures))
@@ -272,7 +276,9 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric + "/measures"
         else:
-            url = self.resource_url % resource_id + metric + "/measures"
+            url = ((self.resource_url %
+                    utils.encode_resource_id(resource_id)) +
+                   metric + "/measures")
         measures = self._get(url, params=params).json()
         return [(iso8601.parse_date(ts), g, value)
                 for ts, g, value in measures]
